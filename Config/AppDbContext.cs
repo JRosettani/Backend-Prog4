@@ -1,6 +1,19 @@
-﻿namespace Backend_Prog4.Config
+﻿using Backend_Prog4.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace Backend_Prog4.Config
 {
-    public class AppDbContext
+    public class AppDbContext : DbContext
     {
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+
+        public DbSet<Categoria> Categorias { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Categoria>()
+                .HasIndex(c => c.Nombre)
+                .IsUnique();
+
+        }
     }
 }

@@ -8,12 +8,17 @@ namespace Backend_Prog4.Config
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<Categoria> Categorias { get; set; }
+
+        public DbSet<Talle> Talles { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Categoria>()
                 .HasIndex(c => c.Nombre)
                 .IsUnique();
 
+            modelBuilder.Entity<Talle>()
+                .HasIndex(t => t.Nombre)
+                .IsUnique();
         }
     }
 }

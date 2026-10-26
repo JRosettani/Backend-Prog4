@@ -40,6 +40,26 @@ namespace Backend_Prog4.Migrations
 
                     b.ToTable("Categorias");
                 });
+
+            modelBuilder.Entity("Backend_Prog4.Models.Talle", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Nombre")
+                        .IsUnique();
+
+                    b.ToTable("Talles");
+                });
 #pragma warning restore 612, 618
         }
     }

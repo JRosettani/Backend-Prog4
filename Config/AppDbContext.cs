@@ -10,6 +10,10 @@ namespace Backend_Prog4.Config
         public DbSet<Categoria> Categorias { get; set; }
 
         public DbSet<Talle> Talles { get; set; }
+
+        public DbSet<Marca> Marcas { get; set; }
+
+        //public DbSet<Producto> Productos { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Categoria>()
@@ -19,6 +23,9 @@ namespace Backend_Prog4.Config
             modelBuilder.Entity<Talle>()
                 .HasIndex(t => t.Nombre)
                 .IsUnique();
+
+            //modelBuilder.Entity<Producto>().
+
         }
     }
 }

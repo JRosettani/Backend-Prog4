@@ -47,16 +47,16 @@ public class CategoriasService
 
     public Categoria ActualizarUnoPorId(int id, CrearActualizarCategoriaDTO dto)
     {
-        Categoria ing = ObtenerUnoPorId(id);
+        Categoria cat = ObtenerUnoPorId(id);
         if (dto.Nombre != null)
         {
-            ing.Nombre = dto.Nombre;
+            cat.Nombre = dto.Nombre;
         }
 
-        _db.Categorias.Update(ing);
+        _db.Categorias.Update(cat);
         _db.SaveChanges();
 
-        return ing;
+        return cat;
     }
 
     public void EliminarUnoPorId(int id)

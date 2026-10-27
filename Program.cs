@@ -13,6 +13,7 @@ builder.Services.AddSwaggerGen();
 // inyeccion de dependencia
 
 builder.Services.AddScoped<CategoriasService>();
+builder.Services.AddScoped<TallesService>();
 
 // conficuracion de db : 
 

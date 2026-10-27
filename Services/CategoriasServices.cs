@@ -2,27 +2,28 @@
 using Backend_Prog4.Config;
 using Backend_Prog4.DTOs.Categoria;
 using Backend_Prog4.Models;
+using Backend_Prog4.Repositories;
 using Backend_Prog4.Utils.Repuestas;
 
 namespace Backend_Prog4.Services;
 
 public class CategoriasService
 {
-    private readonly AppDbContext _db;
-    public CategoriasService(AppDbContext db)
+    private readonly IRepository _repo;
+    public CategoriasService(IRepository db)
     {
-        _db = db;
+        _repo = db;
     }
 
     public List<Categoria> ObtenerTodos()
     {
-        var lista = _db.Categorias.ToList();
+        var lista = _repo.ObtenerTodos();
         return lista;
     }
 
     public Categoria ObtenerUnoPorId(int id)
     {
-        var cat = _db.Categorias.FirstOrDefault((p) => p.Id == id);
+        var cat = _repo.ObtenerUno((p) => p.Id == id);
         if (cat == null)
         {
             throw new RespuestaError(
@@ -40,8 +41,8 @@ public class CategoriasService
             Nombre = dto.Nombre,
         };
 
-        _db.Categorias.Add(cat);
-        _db.SaveChanges();
+        _repo.CrearUno(cat);
+        _repo.Guardar();
         return cat;
     }
 
@@ -53,8 +54,8 @@ public class CategoriasService
             cat.Nombre = dto.Nombre;
         }
 
-        _db.Categorias.Update(cat);
-        _db.SaveChanges();
+        _repo.ActualizarUno(cat);
+        _repo.Guardar();
 
         return cat;
     }
@@ -62,11 +63,11 @@ public class CategoriasService
     public void EliminarUnoPorId(int id)
     {
         Categoria cat = ObtenerUnoPorId(id);
-        _db.Categorias.Remove(cat);
-        _db.SaveChanges();
+        _repo.EliminarUno(cat);
+        _repo.Guardar();
     }
 
-    public List<Categoria> ObtenerPorIds(List<int> Ids)
+    /*public List<Categoria> ObtenerPorIds(List<int> Ids)
     {
         if (Ids == null || Ids.Count == 0)
         {
@@ -75,7 +76,7 @@ public class CategoriasService
                HttpStatusCode.BadRequest
            );
         }
-        var cats = _db.Categorias.Where(cat => Ids.Contains(cat.Id)).ToList();
+        var cats = _repo.ObtenerTodos(cat => Ids.Contains(cat.Id)).ToList();
         return cats;
-    }
+    }*/
 }

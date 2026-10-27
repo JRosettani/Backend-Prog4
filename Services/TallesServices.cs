@@ -2,27 +2,28 @@
 using Backend_Prog4.Config;
 using Backend_Prog4.DTOs.Talle;
 using Backend_Prog4.Models;
+using Backend_Prog4.Repositories;
 using Backend_Prog4.Utils.Repuestas;
 
 namespace Backend_Prog4.Services;
 
 public class TallesService
 {
-    private readonly AppDbContext _db;
-    public TallesService(AppDbContext db)
+    private readonly IRepository _repo;
+    public TallesService(IRepository db)
     {
-        _db = db;
+        _repo = db;
     }
 
     public List<Talle> ObtenerTodos()
     {
-        var lista = _db.Talles.ToList();
+        var lista = _repo.ObtenerTodos();
         return lista;
     }
 
     public Talle ObtenerUnoPorId(int id)
     {
-        var t = _db.Talles.FirstOrDefault((p) => p.Id == id);
+        var t = _repo.ObtenerUno((p) => p.Id == id);
         if (t == null)
         {
             throw new RespuestaError(
@@ -40,8 +41,8 @@ public class TallesService
             Nombre = dto.Nombre,
         };
 
-        _db.Talles.Add(t);
-        _db.SaveChanges();
+        _repo.CrearUno(t);
+        _repo.Guardar();
         return t;
     }
 
@@ -53,8 +54,8 @@ public class TallesService
             talle.Nombre = dto.Nombre;
         }
 
-        _db.Talles.Update(talle);
-        _db.SaveChanges();
+        _repo.ActualizarUno(talle);
+        _repo.Guardar();
 
         return talle;
     }
@@ -62,11 +63,11 @@ public class TallesService
     public void EliminarUnoPorId(int id)
     {
         Talle t = ObtenerUnoPorId(id);
-        _db.Talles.Remove(t);
-        _db.SaveChanges();
+        _repo.EliminarUno(t);
+        _repo.Guardar();
     }
 
-    public List<Talle> ObtenerPorIds(List<int> Ids)
+    /*public List<Talle> ObtenerPorIds(List<int> Ids)
     {
         if (Ids == null || Ids.Count == 0)
         {
@@ -77,5 +78,5 @@ public class TallesService
         }
         var talles = _db.Talles.Where(t => Ids.Contains(t.Id)).ToList();
         return talles;
-    }
+    }*/
 }

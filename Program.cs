@@ -1,4 +1,6 @@
 using Backend_Prog4.Config;
+using Backend_Prog4.Models;
+using Backend_Prog4.Repositories;
 using Backend_Prog4.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +16,9 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<CategoriasService>();
 builder.Services.AddScoped<TallesService>();
+builder.Services.AddScoped<IRepository<Categoria>, Repository<Categoria>>();
+builder.Services.AddScoped<IRepository<Talle>, Repository<Talle>>();
+
 
 // conficuracion de db : 
 

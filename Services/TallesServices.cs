@@ -9,10 +9,10 @@ namespace Backend_Prog4.Services;
 
 public class TallesService
 {
-    private readonly IRepository _repo;
-    public TallesService(IRepository db)
+    private readonly IRepository<Talle> _repo;
+    public TallesService(IRepository<Talle> repo)
     {
-        _repo = db;
+        _repo = repo;
     }
 
     public List<Talle> ObtenerTodos()

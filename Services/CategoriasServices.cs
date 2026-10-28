@@ -9,10 +9,10 @@ namespace Backend_Prog4.Services;
 
 public class CategoriasService
 {
-    private readonly IRepository _repo;
-    public CategoriasService(IRepository db)
+    private readonly IRepository<Categoria> _repo;
+    public CategoriasService(IRepository<Categoria> repo)
     {
-        _repo = db;
+        _repo = repo;
     }
 
     public List<Categoria> ObtenerTodos()

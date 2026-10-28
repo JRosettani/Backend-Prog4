@@ -2,7 +2,7 @@
 
 namespace Backend_Prog4.Repositories
 {
-    public interface IRepositoryObtenerIds : IRepository
+    public interface IRepositoryObtenerIds<T> : IRepository<T> where T : class
     {
         List<T> ObtenerPorIds(List<int> Ids);
 

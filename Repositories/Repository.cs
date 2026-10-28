@@ -1,4 +1,6 @@
 ﻿using Backend_Prog4.Config;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Backend_Prog4.Repositories
 {
@@ -74,5 +76,6 @@ namespace Backend_Prog4.Repositories
         {
             _db.SaveChanges();
         }
+
     }
 }

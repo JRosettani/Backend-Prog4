@@ -1,5 +1,9 @@
 using Backend_Prog4.Config;
 using Backend_Prog4.Models;
+<<<<<<< HEAD
+=======
+using Backend_Prog4.Repositories;
+>>>>>>> origin/develop
 using Backend_Prog4.Services;
 using Backend_Prog4.Utils.Filters;
 using Microsoft.EntityFrameworkCore;
@@ -41,10 +45,15 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddScoped<CategoriasService>();
 builder.Services.AddScoped<TallesService>();
+<<<<<<< HEAD
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Repositorios ->
 //builder.Services.AddScoped<IRepository<Categoria>, Repository<Categoria>>(); -> prueba
+=======
+builder.Services.AddScoped<IRepository<Categoria>, Repository<Categoria>>();
+builder.Services.AddScoped<IRepository<Talle>, Repository<Talle>>();
+>>>>>>> origin/develop
 
 
 // conficuracion de db : 

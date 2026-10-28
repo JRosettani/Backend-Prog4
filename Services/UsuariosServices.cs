@@ -87,6 +87,7 @@ public class UsuariosService
         };
 
         _repo.CrearUno(usuario);
+
         return usuario;
     }
 

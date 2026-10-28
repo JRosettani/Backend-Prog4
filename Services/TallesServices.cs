@@ -9,8 +9,8 @@ namespace Backend_Prog4.Services;
 
 public class TallesService
 {
-    private readonly IRepository _repo;
-    public TallesService(IRepository db)
+    private readonly IRepository<Talle> _repo;
+    public TallesService(IRepository<Talle> db)
     {
         _repo = db;
     }

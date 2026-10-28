@@ -1,5 +1,6 @@
 ﻿using Backend_Prog4.Models;
 using Microsoft.EntityFrameworkCore;
+using panaderia.Models;
 
 namespace Backend_Prog4.Config
 {
@@ -17,6 +18,7 @@ namespace Backend_Prog4.Config
         public DbSet<EstadoPedido> EstadoPedidos { get; set; }
         //public DbSet<Producto> Productos { get; set; }
 
+        public DbSet<Rol> Roles { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -42,6 +44,18 @@ namespace Backend_Prog4.Config
                 .WithMany()
                 .OnDelete(DeleteBehavior.Restrict);
 
+
+            modelBuilder.Entity<Rol>().HasData(
+                new Rol() { Id = 1, Nombre = "Admin" },
+                new Rol() { Id = 2, Nombre = "User" }
+            );
+
+            modelBuilder.Entity<Usuario>()
+           .HasMany(p => p.Roles).WithMany()
+           .UsingEntity<UsuarioRol>(
+               l => l.HasOne<Rol>().WithMany().HasForeignKey(e => e.RolId),
+               r => r.HasOne<Usuario>().WithMany().HasForeignKey(e => e.UsuarioId)
+           );
 
             //modelBuilder.Entity<Producto>().
 

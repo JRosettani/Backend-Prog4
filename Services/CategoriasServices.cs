@@ -9,8 +9,8 @@ namespace Backend_Prog4.Services;
 
 public class CategoriasService
 {
-    private readonly IRepository _repo;
-    public CategoriasService(IRepository db)
+    private readonly IRepository<Categoria> _repo;
+    public CategoriasService(IRepository<Categoria> db)
     {
         _repo = db;
     }
@@ -67,7 +67,7 @@ public class CategoriasService
         _repo.Guardar();
     }
 
-    /*public List<Categoria> ObtenerPorIds(List<int> Ids)
+    public List<Categoria> ObtenerPorIds(List<int> Ids)
     {
         if (Ids == null || Ids.Count == 0)
         {
@@ -78,5 +78,5 @@ public class CategoriasService
         }
         var cats = _repo.ObtenerTodos(cat => Ids.Contains(cat.Id)).ToList();
         return cats;
-    }*/
+    }
 }

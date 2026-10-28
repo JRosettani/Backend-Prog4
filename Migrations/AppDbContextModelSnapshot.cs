@@ -111,6 +111,35 @@ namespace Backend_Prog4.Migrations
                     b.ToTable("Pedidos");
                 });
 
+            modelBuilder.Entity("Backend_Prog4.Models.Rol", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Nombre = "Admin"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Nombre = "User"
+                        });
+                });
+
             modelBuilder.Entity("Backend_Prog4.Models.Talle", b =>
                 {
                     b.Property<int>("Id")
@@ -155,12 +184,24 @@ namespace Backend_Prog4.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("esAdmin")
-                        .HasColumnType("bit");
-
                     b.HasKey("Id");
 
                     b.ToTable("Usuarios");
+                });
+
+            modelBuilder.Entity("panaderia.Models.UsuarioRol", b =>
+                {
+                    b.Property<int>("RolId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RolId", "UsuarioId");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("UsuarioRol");
                 });
 
             modelBuilder.Entity("Backend_Prog4.Models.Pedido", b =>
@@ -180,6 +221,21 @@ namespace Backend_Prog4.Migrations
                     b.Navigation("EstadoPedido");
 
                     b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("panaderia.Models.UsuarioRol", b =>
+                {
+                    b.HasOne("Backend_Prog4.Models.Rol", null)
+                        .WithMany()
+                        .HasForeignKey("RolId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Backend_Prog4.Models.Usuario", null)
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

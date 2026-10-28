@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <Folder Include="Config\" />
+    <Folder Include="Repository\" />
   </ItemGroup>
 
 </Project>

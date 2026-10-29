@@ -70,11 +70,14 @@ namespace Backend_Prog4.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("MyProperty")
+                    b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Nombre")
+                        .IsUnique();
 
                     b.ToTable("Marcas");
                 });
@@ -88,6 +91,9 @@ namespace Backend_Prog4.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("EstadoPedidoId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EstadoPedidoId1")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Fecha")
@@ -105,6 +111,8 @@ namespace Backend_Prog4.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EstadoPedidoId");
+
+                    b.HasIndex("EstadoPedidoId1");
 
                     b.HasIndex("UsuarioId");
 
@@ -212,6 +220,10 @@ namespace Backend_Prog4.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Backend_Prog4.Models.EstadoPedido", null)
+                        .WithMany("Pedidos")
+                        .HasForeignKey("EstadoPedidoId1");
+
                     b.HasOne("Backend_Prog4.Models.Usuario", "Usuario")
                         .WithMany()
                         .HasForeignKey("UsuarioId")
@@ -236,6 +248,11 @@ namespace Backend_Prog4.Migrations
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Backend_Prog4.Models.EstadoPedido", b =>
+                {
+                    b.Navigation("Pedidos");
                 });
 #pragma warning restore 612, 618
         }

@@ -3,11 +3,14 @@ using Backend_Prog4.Utils.Repuestas;
 using Microsoft.AspNetCore.Mvc;
 using Backend_Prog4.DTOs.Categoria;
 using Backend_Prog4.Services;
+using Microsoft.AspNetCore.Authorization;
+using Backend_Prog4.Enums;
 
 namespace Backend_Prog4.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = ROL.ADMIN)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public class CategoriasController : ControllerBase
     {
@@ -18,6 +21,7 @@ namespace Backend_Prog4.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = ROL.USER)]
         [ProducesResponseType(typeof(Respuesta), StatusCodes.Status200OK)]
         public ActionResult<Respuesta> ObtenerTodos()
         {
@@ -25,7 +29,7 @@ namespace Backend_Prog4.Controllers
             {
                 var todos = _service.ObtenerTodos();
                 RespuestaExito exito = new RespuestaExito(
-                    "Categorias obtenidos!",
+                    "Categorias obtenidas!",
                     HttpStatusCode.OK,
                     todos
                 );
@@ -44,6 +48,7 @@ namespace Backend_Prog4.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(Respuesta), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Respuesta), StatusCodes.Status404NotFound)]
+        [Authorize(Roles = ROL.USER)]
         public ActionResult<Respuesta> ObtenerUnaPorId(int id)
         {
             try
@@ -122,6 +127,8 @@ namespace Backend_Prog4.Controllers
 
         [HttpDelete("{id}")]
         [ProducesResponseType(typeof(Respuesta), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Respuesta), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(Respuesta), StatusCodes.Status404NotFound)]
         public ActionResult<Respuesta> EliminarUno(int id)
         {
             try

@@ -5,6 +5,6 @@
         public int Id { get; set; }
 
         public string Nombre { get; set; } = string.Empty;
-        // public List<Pedido> Pedidos { get; set; } = new();
+        public List<Pedido> Pedidos { get; set; } = new();
     }
 }

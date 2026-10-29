@@ -44,6 +44,10 @@ namespace Backend_Prog4.Config
                 .WithMany()
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Marca>()
+                .HasIndex(m => m.Nombre)
+                .IsUnique();
+
 
             modelBuilder.Entity<Rol>().HasData(
                 new Rol() { Id = 1, Nombre = "Admin" },

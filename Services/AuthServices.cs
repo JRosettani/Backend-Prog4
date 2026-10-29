@@ -12,11 +12,6 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Backend_Prog4.Services;
 
-/*public interface IAuthService
-{
-    public LoginRespuestaDTO Login(LoginDTO login);
-}*/
-
 public class AuthService : IAuthService
 {
     private readonly string _secret;

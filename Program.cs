@@ -42,6 +42,8 @@ builder.Services.AddScoped<CategoriasService>();
 builder.Services.AddScoped<TallesService>();
 builder.Services.AddScoped<RolesService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<UsuariosService>();
+builder.Services.AddScoped<IEncoderServices, EncoderServices>();
 
 // Repositorios ->
 //builder.Services.AddScoped<IRepository<Categoria>, Repository<Categoria>>(); -> prueba

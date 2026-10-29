@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿
+using System.Net;
 using Backend_Prog4.Config;
 using Backend_Prog4.DTOs.Categoria;
 using Backend_Prog4.Models;
@@ -10,9 +11,10 @@ namespace Backend_Prog4.Services;
 public class CategoriasService
 {
     private readonly IRepository<Categoria> _repo;
-    public CategoriasService(IRepository<Categoria> db)
+
+    public CategoriasService(IRepository<Categoria> repo)
     {
-        _repo = db;
+        _repo = repo;
     }
 
     public List<Categoria> ObtenerTodos()
@@ -23,7 +25,8 @@ public class CategoriasService
 
     public Categoria ObtenerUnoPorId(int id)
     {
-        var cat = _repo.ObtenerUno((p) => p.Id == id);
+        var cat = _repo.ObtenerUno(p => p.Id == id);
+
         if (cat == null)
         {
             throw new RespuestaError(
@@ -31,6 +34,7 @@ public class CategoriasService
                 HttpStatusCode.NotFound
             );
         }
+
         return cat;
     }
 
@@ -43,12 +47,14 @@ public class CategoriasService
 
         _repo.CrearUno(cat);
         _repo.Guardar();
+
         return cat;
     }
 
     public Categoria ActualizarUnoPorId(int id, CrearActualizarCategoriaDTO dto)
     {
         Categoria cat = ObtenerUnoPorId(id);
+
         if (dto.Nombre != null)
         {
             cat.Nombre = dto.Nombre;
@@ -63,6 +69,7 @@ public class CategoriasService
     public void EliminarUnoPorId(int id)
     {
         Categoria cat = ObtenerUnoPorId(id);
+
         _repo.EliminarUno(cat);
         _repo.Guardar();
     }
@@ -72,11 +79,13 @@ public class CategoriasService
         if (Ids == null || Ids.Count == 0)
         {
             throw new RespuestaError(
-               "La lista esta vacia",
-               HttpStatusCode.BadRequest
-           );
+                "La lista esta vacia",
+                HttpStatusCode.BadRequest
+            );
         }
+
         var cats = _repo.ObtenerTodos(cat => Ids.Contains(cat.Id)).ToList();
+
         return cats;
     }
 }

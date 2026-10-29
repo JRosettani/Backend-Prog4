@@ -10,20 +10,20 @@ using Backend_Prog4.Utils.Repuestas;
 using Microsoft.IdentityModel.Tokens;
 
 
-namespace panaderia.Services;
+namespace Backend_Prog4.Services;
 
-public interface IAuthService
+/*public interface IAuthService
 {
     public LoginRespuestaDTO Login(LoginDTO login);
-}
+}*/
 
 public class AuthService : IAuthService
 {
     private readonly string _secret;
 
     private readonly UsuariosService _usuarioService;
-    private readonly IEncoderService _encoder;
-    public AuthService(IConfiguration config, UsuariosService usuarioService, IEncoderService encoder)
+    private readonly IEncoderServices _encoder;
+    public AuthService(IConfiguration config, UsuariosService usuarioService, IEncoderServices encoder)
     {
         string secret = config.GetSection("JWT:Secret").Value ?? string.Empty;
         _secret = secret;
@@ -36,14 +36,14 @@ public class AuthService : IAuthService
         Usuario usuario;
         try
         {
-            usuario = _usuarioService.ObtenerUnoPorNombreUsuario(login.Usuario);
+            usuario = _usuarioService.ObtenerUnoPorEmail(login.Email);
         }
         catch
         {
             throw new RespuestaError("Credenciales invalidas", HttpStatusCode.BadRequest);
         }
 
-        bool IsVerified = _encoder.Verify(login.Clave, usuario.Clave);
+        bool IsVerified = _encoder.Verify(login.Password, usuario.PasswordHash);
 
         if (!IsVerified)
         {
@@ -54,8 +54,8 @@ public class AuthService : IAuthService
         UsuarioDTO dto = new UsuarioDTO()
         {
             Id = usuario.Id,
-            NombreUsuario = usuario.NombreUsuario,
-            FechaAlta = usuario.FechaAlta,
+            Nombre = usuario.Nombre,
+            Email = usuario.Email,
             Roles = usuario.Roles
         };
 
@@ -71,7 +71,7 @@ public class AuthService : IAuthService
         var claims = new ClaimsIdentity();
 
         claims.AddClaim(new Claim("Id", usuario.Id.ToString()));
-        claims.AddClaim(new Claim(ClaimTypes.NameIdentifier, usuario.NombreUsuario));
+        claims.AddClaim(new Claim(ClaimTypes.NameIdentifier, usuario.Email));
 
         if (usuario.Roles.Count > 0)
         {

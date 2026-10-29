@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿
+using System.Net;
 using Backend_Prog4.Config;
 using Backend_Prog4.DTOs.Talle;
 using Backend_Prog4.Models;
@@ -10,9 +11,10 @@ namespace Backend_Prog4.Services;
 public class TallesService
 {
     private readonly IRepository<Talle> _repo;
-    public TallesService(IRepository<Talle> db)
+
+    public TallesService(IRepository<Talle> repo)
     {
-        _repo = db;
+        _repo = repo;
     }
 
     public List<Talle> ObtenerTodos()

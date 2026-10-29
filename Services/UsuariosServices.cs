@@ -4,6 +4,7 @@ using Backend_Prog4.Models;
 using Backend_Prog4.Utils.Repuestas;
 using Backend_Prog4.Config;
 using Backend_Prog4.Dtos.Usuario;
+using Backend_Prog4.Repositories;
 
 namespace Backend_Prog4.Services;
 
@@ -43,9 +44,13 @@ public class UsuariosService
         return u;
     }
 
-    public Usuario ObtenerUnoPorNombreUsuario(string nombreUsuario)
+    public Usuario ObtenerUnoPorEmail(string email)
     {
-        var u = _repo.ObtenerUno((p) => p.Nombre == nombreUsuario, includes: [u => u.Roles]);
+        var u = _repo.ObtenerUno(
+            p => p.Email == email,
+            includes: [u => u.Roles]
+        );
+
         if (u == null)
         {
             throw new RespuestaError(
@@ -53,30 +58,37 @@ public class UsuariosService
                 HttpStatusCode.NotFound
             );
         }
+
         return u;
     }
 
+
     public Usuario CrearUno(CrearUsuarioDTO dto)
     {
-        var u = _repo.ObtenerUno(u => u.Nombre == dto.Nombre);
+        var u = _repo.ObtenerUno(u => u.Email == dto.Email);
 
         if (u != null)
         {
             throw new RespuestaError(
-                "El Nombre de Usuario no esta disponible",
+                "El correo electronico no esta disponible",
                 HttpStatusCode.BadRequest
             );
         }
 
         var rol = _rolesService.ObtenerUnoPorNombre("User");
+
         Usuario usuario = new Usuario()
         {
-            NombreUsuario = dto.NombreUsuario,
-            Clave = _encoder.Encode(dto.Clave),
+            Nombre = dto.Nombre,
+            Apellido = dto.Apellido,
+            Email = dto.Email,
+            PasswordHash = _encoder.Encode(dto.Clave),
             Roles = new List<Rol>() { rol }
         };
 
         _repo.CrearUno(usuario);
+
         return usuario;
     }
+
 }

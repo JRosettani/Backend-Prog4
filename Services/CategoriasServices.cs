@@ -46,7 +46,6 @@ public class CategoriasService
         };
 
         _repo.CrearUno(cat);
-        _repo.Guardar();
 
         return cat;
     }
@@ -61,7 +60,6 @@ public class CategoriasService
         }
 
         _repo.ActualizarUno(cat);
-        _repo.Guardar();
 
         return cat;
     }
@@ -71,7 +69,6 @@ public class CategoriasService
         Categoria cat = ObtenerUnoPorId(id);
 
         _repo.EliminarUno(cat);
-        _repo.Guardar();
     }
 
     public List<Categoria> ObtenerPorIds(List<int> Ids)

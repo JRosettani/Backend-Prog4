@@ -44,7 +44,6 @@ public class TallesService
         };
 
         _repo.CrearUno(t);
-        _repo.Guardar();
         return t;
     }
 
@@ -66,10 +65,9 @@ public class TallesService
     {
         Talle t = ObtenerUnoPorId(id);
         _repo.EliminarUno(t);
-        _repo.Guardar();
     }
 
-    /*public List<Talle> ObtenerPorIds(List<int> Ids)
+    public List<Talle> ObtenerPorIds(List<int> Ids)
     {
         if (Ids == null || Ids.Count == 0)
         {
@@ -78,7 +76,7 @@ public class TallesService
                HttpStatusCode.BadRequest
            );
         }
-        var talles = _db.Talles.Where(t => Ids.Contains(t.Id)).ToList();
+        var talles = _repo.ObtenerTodos(p => Ids.Contains(p.Id));
         return talles;
-    }*/
+    }
 }

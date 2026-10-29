@@ -5,6 +5,9 @@ using Backend_Prog4.Utils.Repuestas;
 using Backend_Prog4.Config;
 using Backend_Prog4.Dtos.Usuario;
 using Backend_Prog4.Repositories;
+using b.Enums;
+using Backend_Prog4.Enums;
+using Backend_Prog4.DTOs.Talle;
 
 namespace Backend_Prog4.Services;
 
@@ -75,7 +78,7 @@ public class UsuariosService
             );
         }
 
-        var rol = _rolesService.ObtenerUnoPorNombre("User");
+        var rol = _rolesService.ObtenerUnoPorNombre(ROL.USER);
 
         Usuario usuario = new Usuario()
         {
@@ -87,6 +90,36 @@ public class UsuariosService
         };
 
         _repo.CrearUno(usuario);
+
+        return usuario;
+    }
+
+    public Usuario ActualizarUnoPorId(int id, ActualizarUsuarioDTO dto)
+    {
+        Usuario usuario = ObtenerUnoPorId(id);
+
+        if (dto.Nombre != null)
+        {
+            usuario.Nombre = dto.Nombre;
+        }
+
+        if (dto.Apellido != null)
+        {
+            usuario.Apellido = dto.Apellido;
+        }
+
+        if (dto.Email != null)
+        {
+            usuario.Email = dto.Email;
+        }
+
+        if (dto.Clave != null)
+        {
+            // la clave nunca se guarda tal cual: se hashea antes
+            usuario.PasswordHash = _encoder.Encode(dto.Clave);
+        }
+
+        _repo.ActualizarUno(usuario);
 
         return usuario;
     }

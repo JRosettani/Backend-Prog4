@@ -16,6 +16,6 @@ namespace Backend_Prog4.Models
         public int UsuarioId { get; set; }
         public Usuario Usuario { get; set; } = null!;
 
-         // public List<PedidoItem> PedidoItems { get; set; } = new();
+          //public List<PedidoItem> PedidoItems { get; set; } = new();
     }
 }

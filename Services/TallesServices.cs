@@ -17,15 +17,15 @@ public class TallesService
         _repo = repo;
     }
 
-    public List<Talle> ObtenerTodos()
+    public async Task<List<Talle>> ObtenerTodos()
     {
-        var lista = _repo.ObtenerTodos();
+        var lista = await _repo.ObtenerTodos();
         return lista;
     }
 
-    public Talle ObtenerUnoPorId(int id)
+    public async Task<Talle> ObtenerUnoPorId(int id)
     {
-        var t = _repo.ObtenerUno((p) => p.Id == id);
+        var t = await _repo.ObtenerUno((p) => p.Id == id);
         if (t == null)
         {
             throw new RespuestaError(
@@ -36,38 +36,38 @@ public class TallesService
         return t;
     }
 
-    public Talle CrearUno(CrearActualizarTalleDTO dto)
+    public async Task<Talle> CrearUno(CrearActualizarTalleDTO dto)
     {
         var t = new Talle()
         {
             Nombre = dto.Nombre,
         };
 
-        _repo.CrearUno(t);
+        await _repo.CrearUno(t);
         return t;
     }
 
-    public Talle ActualizarUnoPorId(int id, CrearActualizarTalleDTO dto)
+    public async Task<Talle> ActualizarUnoPorId(int id, CrearActualizarTalleDTO dto)
     {
-        Talle talle = ObtenerUnoPorId(id);
+        Talle talle = await ObtenerUnoPorId(id);
         if (dto.Nombre != null)
         {
             talle.Nombre = dto.Nombre;
         }
 
-        _repo.ActualizarUno(talle);
-        _repo.Guardar();
+        await _repo.ActualizarUno(talle);
+        await _repo.Guardar();
 
         return talle;
     }
 
-    public void EliminarUnoPorId(int id)
+    public async Task EliminarUnoPorId(int id)
     {
-        Talle t = ObtenerUnoPorId(id);
-        _repo.EliminarUno(t);
+        Talle t =  await ObtenerUnoPorId(id);
+        await _repo.EliminarUno(t);
     }
 
-    public List<Talle> ObtenerPorIds(List<int> Ids)
+    public async Task<List<Talle>> ObtenerPorIds(List<int> Ids)
     {
         if (Ids == null || Ids.Count == 0)
         {
@@ -76,7 +76,7 @@ public class TallesService
                HttpStatusCode.BadRequest
            );
         }
-        var talles = _repo.ObtenerTodos(p => Ids.Contains(p.Id));
+        var talles =  await _repo.ObtenerTodos(p => Ids.Contains(p.Id));
         return talles;
     }
 }

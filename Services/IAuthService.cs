@@ -4,7 +4,7 @@ namespace Backend_Prog4.Services
 {
     public interface IAuthService
     {
-        public LoginRespuestaDTO Login(LoginDTO login);
+        public Task<LoginRespuestaDTO> Login(LoginDTO login);
 
     }
 }

@@ -10,7 +10,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -42,7 +41,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddScoped<CategoriasService>(); // v
 builder.Services.AddScoped<TallesService>(); // v
 builder.Services.AddScoped<RolesService>(); // v
-builder.Services.AddScoped<IAuthService, AuthService>(); // v
+builder.Services.AddScoped<IAuthService, AuthServices>(); // v
 builder.Services.AddScoped<UsuariosService>(); // v
 builder.Services.AddScoped<IEncoderServices, EncoderServices>(); // v
 builder.Services.AddScoped<MarcaServices>(); // v
@@ -105,6 +104,8 @@ app.UseCors(opt =>
 
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

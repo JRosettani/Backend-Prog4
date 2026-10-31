@@ -20,6 +20,7 @@ namespace Backend_Prog4.Config
 
         public DbSet<Rol> Roles { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Categoria>()
@@ -74,6 +75,18 @@ namespace Backend_Prog4.Config
             .HasForeignKey(p => p.MarcaId)
             .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<ProductoTalle>()
+         .HasKey(pt => new { pt.ProductoId, pt.TalleId });
+
+            modelBuilder.Entity<ProductoTalle>()
+                .HasOne(pt => pt.Producto)
+                .WithMany(p => p.Talles)
+                .HasForeignKey(pt => pt.ProductoId);
+
+            modelBuilder.Entity<ProductoTalle>()
+                .HasOne(pt => pt.Talle)
+                .WithMany()
+                .HasForeignKey(pt => pt.TalleId);
         }
     }
 }

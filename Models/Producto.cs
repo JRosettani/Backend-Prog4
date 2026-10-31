@@ -25,10 +25,10 @@ namespace Backend_Prog4.Models
 
         public Marca Marca { get; set; } = null!;
 
-       //Lista de ítems de pedido donde aparece este producto
-      // public List<PedidoItem> Items { get; set; } = new();
+        //Lista de ítems de pedido donde aparece este producto
+        // public List<PedidoItem> Items { get; set; } = new();
 
-      // public List<ProductoTalle> Talles { get; set; } = new();
+        public List<ProductoTalle> Talles { get; set; } = new();
 
     }
 }

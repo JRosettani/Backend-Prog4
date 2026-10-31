@@ -1,8 +1,15 @@
-﻿/*namespace Backend_Prog4.Models
+﻿namespace Backend_Prog4.Models
 {
     public class ProductoTalle
     {
-        public int Id { get; set; }
-        public string Nombre { get; set; } = string.Empty;
+        public int ProductoId { get; set; }
+
+        public int TalleId { get; set; }
+
+        public int Stock { get; set; }
+
+        public Producto Producto { get; set; } = null!;
+        public Talle Talle { get; set; } = null!;
+
     }
-}*/
+}

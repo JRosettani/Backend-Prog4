@@ -6,7 +6,6 @@ using Backend_Prog4.Utils.Repuestas;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-
 namespace panaderia.Controllers;
 
 [ApiController]
@@ -16,7 +15,7 @@ public class AuthController : ControllerBase
     private readonly IAuthService _auth;
     private readonly UsuariosService _usuariosServices;
 
-    public AuthController(IAuthService auth,UsuariosService userService)
+    public AuthController(IAuthService auth, UsuariosService userService)
     {
         _auth = auth;
         _usuariosServices = userService;
@@ -26,31 +25,21 @@ public class AuthController : ControllerBase
     [ProducesResponseType(typeof(Respuesta), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(Respuesta), StatusCodes.Status400BadRequest)]
     [AllowAnonymous]
-    public ActionResult<Respuesta> Login([FromBody] LoginDTO dto)
+    public async Task<ActionResult<Respuesta>> Login([FromBody] LoginDTO dto)
     {
         try
         {
-            var response = _auth.Login(dto);
-            RespuestaExito exito = new RespuestaExito(
-            "Bienvenido!",
-            HttpStatusCode.OK,
-            response
-            );
+            var response = await _auth.Login(dto);
+            RespuestaExito exito = new RespuestaExito("Bienvenido!", HttpStatusCode.OK, response);
             return StatusCode((int)exito.CodigoEstado, exito.Res);
         }
         catch (RespuestaError error)
         {
-            return StatusCode(
-                (int)error.CodigoEstado,
-                error.Res
-            );
+            return StatusCode((int)error.CodigoEstado, error.Res);
         }
         catch (Exception error)
         {
-            return StatusCode(
-                StatusCodes.Status500InternalServerError,
-                new Respuesta(error.Message)
-            );
+            return StatusCode(StatusCodes.Status500InternalServerError, new Respuesta(error.Message));
         }
     }
 
@@ -58,31 +47,21 @@ public class AuthController : ControllerBase
     [ProducesResponseType(typeof(Respuesta), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Respuesta), StatusCodes.Status400BadRequest)]
     [AllowAnonymous]
-    public ActionResult<Respuesta> Register([FromBody] CrearUsuarioDTO dto)
+    public async Task<ActionResult<Respuesta>> Register([FromBody] CrearUsuarioDTO dto)
     {
         try
         {
-            var usuario =  _usuariosServices.CrearUno(dto);
-            RespuestaExito exito = new RespuestaExito(
-                "Usuario Creado!",
-                HttpStatusCode.Created,
-                usuario
-            );
+            var usuario = await _usuariosServices.CrearUno(dto);
+            RespuestaExito exito = new RespuestaExito("Usuario Creado!", HttpStatusCode.Created, usuario);
             return StatusCode((int)exito.CodigoEstado, exito.Res);
         }
         catch (RespuestaError error)
         {
-            return StatusCode(
-                (int)error.CodigoEstado,
-                error.Res
-            );
+            return StatusCode((int)error.CodigoEstado, error.Res);
         }
         catch (Exception error)
         {
-            return StatusCode(
-                StatusCodes.Status500InternalServerError,
-                new Respuesta(error.Message)
-            );
+            return StatusCode(StatusCodes.Status500InternalServerError, new Respuesta(error.Message));
         }
     }
 }

@@ -5,9 +5,7 @@ using Backend_Prog4.Utils.Repuestas;
 using Backend_Prog4.Config;
 using Backend_Prog4.Dtos.Usuario;
 using Backend_Prog4.Repositories;
-using b.Enums;
 using Backend_Prog4.Enums;
-using Backend_Prog4.DTOs.Talle;
 
 namespace Backend_Prog4.Services;
 
@@ -23,20 +21,23 @@ public class UsuariosService
         _encoder = encoder;
     }
 
-    public List<UsuarioDTO> ObtenerTodos()
+    public async Task<List<UsuarioDTO>> ObtenerTodos()
     {
-        var lista = _repo.ObtenerTodos().Select(u => new UsuarioDTO()
+        var lista = await _repo.ObtenerTodos();
+
+        return lista.Select(u => new UsuarioDTO()
         {
             Id = u.Id,
             Nombre = u.Nombre,
+            Apellido = u.Apellido,
+            Email = u.Email,
             Roles = u.Roles
         }).ToList();
-        return lista;
     }
 
-    public Usuario ObtenerUnoPorId(int id)
+    public async Task<Usuario> ObtenerUnoPorId(int id)
     {
-        var u = _repo.ObtenerUno((u) => u.Id == id, includes: [u => u.Roles]);
+        var u = await _repo.ObtenerUno((u) => u.Id == id, includes: [u => u.Roles]);
         if (u == null)
         {
             throw new RespuestaError(
@@ -47,9 +48,9 @@ public class UsuariosService
         return u;
     }
 
-    public Usuario ObtenerUnoPorEmail(string email)
+    public async Task<Usuario> ObtenerUnoPorEmail(string email)
     {
-        var u = _repo.ObtenerUno(
+        var u = await _repo.ObtenerUno(
             p => p.Email == email,
             includes: [u => u.Roles]
         );
@@ -66,9 +67,9 @@ public class UsuariosService
     }
 
 
-    public Usuario CrearUno(CrearUsuarioDTO dto)
+    public async Task<Usuario> CrearUno(CrearUsuarioDTO dto)
     {
-        var u = _repo.ObtenerUno(u => u.Email == dto.Email);
+        var u = await _repo.ObtenerUno(u => u.Email == dto.Email);
 
         if (u != null)
         {
@@ -78,7 +79,7 @@ public class UsuariosService
             );
         }
 
-        var rol = _rolesService.ObtenerUnoPorNombre(ROL.USER);
+        var rol = await _rolesService.ObtenerUnoPorNombre(ROL.USER);
 
         Usuario usuario = new Usuario()
         {
@@ -89,14 +90,14 @@ public class UsuariosService
             Roles = new List<Rol>() { rol }
         };
 
-        _repo.CrearUno(usuario);
+        await _repo.CrearUno(usuario);
 
         return usuario;
     }
 
-    public Usuario ActualizarUnoPorId(int id, ActualizarUsuarioDTO dto)
+    public async Task<Usuario> ActualizarUnoPorId(int id, ActualizarUsuarioDTO dto)
     {
-        Usuario usuario = ObtenerUnoPorId(id);
+        Usuario usuario = await ObtenerUnoPorId(id);
 
         if (dto.Nombre != null)
         {
@@ -119,7 +120,7 @@ public class UsuariosService
             usuario.PasswordHash = _encoder.Encode(dto.Clave);
         }
 
-        _repo.ActualizarUno(usuario);
+        await _repo.ActualizarUno(usuario);
 
         return usuario;
     }

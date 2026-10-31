@@ -17,15 +17,15 @@ public class CategoriasService
         _repo = repo;
     }
 
-    public List<Categoria> ObtenerTodos()
+    public async Task<List<Categoria>> ObtenerTodos()
     {
-        var lista = _repo.ObtenerTodos();
+        var lista = await _repo.ObtenerTodos();
         return lista;
     }
 
-    public Categoria ObtenerUnoPorId(int id)
+    public async Task<Categoria> ObtenerUnoPorId(int id)
     {
-        var cat = _repo.ObtenerUno(p => p.Id == id);
+        var cat = await _repo.ObtenerUno(p => p.Id == id);
 
         if (cat == null)
         {
@@ -38,40 +38,40 @@ public class CategoriasService
         return cat;
     }
 
-    public Categoria CrearUno(CrearActualizarCategoriaDTO dto)
+    public async  Task<Categoria> CrearUno(CrearActualizarCategoriaDTO dto)
     {
         var cat = new Categoria()
         {
             Nombre = dto.Nombre,
         };
 
-        _repo.CrearUno(cat);
+        await _repo.CrearUno(cat);
 
         return cat;
     }
 
-    public Categoria ActualizarUnoPorId(int id, CrearActualizarCategoriaDTO dto)
+    public async Task<Categoria> ActualizarUnoPorId(int id, CrearActualizarCategoriaDTO dto)
     {
-        Categoria cat = ObtenerUnoPorId(id);
+        Categoria cat = await ObtenerUnoPorId(id);
 
         if (dto.Nombre != null)
         {
             cat.Nombre = dto.Nombre;
         }
 
-        _repo.ActualizarUno(cat);
+        await _repo.ActualizarUno(cat);
 
         return cat;
     }
 
-    public void EliminarUnoPorId(int id)
+    public async Task EliminarUnoPorId(int id)
     {
-        Categoria cat = ObtenerUnoPorId(id);
+        Categoria cat = await ObtenerUnoPorId(id);
 
-        _repo.EliminarUno(cat);
+        await _repo.EliminarUno(cat);
     }
 
-    public List<Categoria> ObtenerPorIds(List<int> Ids)
+    public async Task<List<Categoria>> ObtenerPorIds(List<int> Ids)
     {
         if (Ids == null || Ids.Count == 0)
         {
@@ -81,7 +81,7 @@ public class CategoriasService
             );
         }
 
-        var cats = _repo.ObtenerTodos(cat => Ids.Contains(cat.Id)).ToList();
+        var cats = await _repo.ObtenerTodos(cat => Ids.Contains(cat.Id));
 
         return cats;
     }

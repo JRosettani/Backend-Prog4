@@ -13,11 +13,11 @@ public class RolesService
         _repo = repo;
     }
 
-    public List<Rol> ObtenerTodos() => _repo.ObtenerTodos();
+    public async Task<List<Rol>> ObtenerTodos() => await _repo.ObtenerTodos();
 
-    public Rol ObtenerUnoPorNombre(string nombre)
+    public async Task<Rol> ObtenerUnoPorNombre(string nombre)
     {
-        var rol = _repo.ObtenerUno((r) => r.Nombre == nombre);
+        var rol = await _repo.ObtenerUno((r) => r.Nombre == nombre);
         if (rol == null)
         {
             throw new RespuestaError(

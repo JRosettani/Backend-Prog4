@@ -17,15 +17,15 @@ public class MarcaServices
         _repo = repo;
     }
 
-    public List<Marca> ObtenerTodos()
+    public async Task<List<Marca>> ObtenerTodos()
     {
-        var lista = _repo.ObtenerTodos();
+        var lista = await _repo.ObtenerTodos();
         return lista;
     }
 
-    public Marca ObtenerUnoPorId(int id)
+    public async  Task<Marca> ObtenerUnoPorId(int id)
     {
-        var m = _repo.ObtenerUno((m) => m.Id == id);
+        var m =  await _repo.ObtenerUno((m) => m.Id == id);
         if (m == null)
         {
             throw new RespuestaError(
@@ -36,38 +36,38 @@ public class MarcaServices
         return m;
     }
 
-    public Marca CrearUno(CrearActualizarMarcaDTO dto)
+    public async Task<Marca> CrearUno(CrearActualizarMarcaDTO dto)
     {
         var m = new Marca()
         {
             Nombre = dto.Nombre,
         };
 
-        _repo.CrearUno(m);
+        await _repo.CrearUno(m);
         return m;
     }
 
-    public Marca ActualizarUnoPorId(int id, CrearActualizarMarcaDTO dto)
+    public async Task<Marca> ActualizarUnoPorId(int id, CrearActualizarMarcaDTO dto)
     {
-        Marca marca = ObtenerUnoPorId(id);
+        Marca marca = await ObtenerUnoPorId(id);
         if (dto.Nombre != null)
         {
             marca.Nombre = dto.Nombre;
         }
 
-        _repo.ActualizarUno(marca);
-        _repo.Guardar();
+        await _repo.ActualizarUno(marca);
+        await _repo.Guardar();
 
         return marca;
     }
 
-    public void EliminarUnoPorId(int id)
+    public async Task EliminarUnoPorId(int id)
     {
-        Marca m = ObtenerUnoPorId(id);
-        _repo.EliminarUno(m);
+        Marca m = await ObtenerUnoPorId(id);
+        await _repo.EliminarUno(m);
     }
 
-    public List<Marca> ObtenerPorIds(List<int> Ids)
+    public async Task<List<Marca>> ObtenerPorIds(List<int> Ids)
     {
         if (Ids == null || Ids.Count == 0)
         {
@@ -76,7 +76,7 @@ public class MarcaServices
                HttpStatusCode.BadRequest
            );
         }
-        var marcas = _repo.ObtenerTodos(p => Ids.Contains(p.Id));
+        var marcas = await _repo.ObtenerTodos(p => Ids.Contains(p.Id));
         return marcas;
     }
 }

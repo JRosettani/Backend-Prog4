@@ -15,67 +15,57 @@ namespace Backend_Prog4.Repositories
             _dbSet = _db.Set<T>();
         }
 
-        public List<T> ObtenerTodos(Expression<Func<T, bool>>? predicate = null, Expression<Func<T, object>>[]? includes = null)
+        public async Task<List<T>> ObtenerTodos(
+            Expression<Func<T, bool>>? predicate = null,
+            Expression<Func<T, object>>[]? includes = null)
         {
             IQueryable<T> query = _dbSet;
             if (predicate != null)
-            {
                 query = query.Where(predicate);
-            }
             if (includes != null)
-            {
                 foreach (var include in includes)
-                {
                     query = query.Include(include);
-                }
-            }
 
-            return query.ToList();
+            return await query.ToListAsync();
         }
 
-        public T? ObtenerUno(Expression<Func<T, bool>>? predicate = null, Expression<Func<T, object>>[]? includes = null)
+        public async Task<T?> ObtenerUno(
+            Expression<Func<T, bool>>? predicate = null,
+            Expression<Func<T, object>>[]? includes = null)
         {
             IQueryable<T> query = _dbSet;
-
             if (predicate != null)
-            {
                 query = query.Where(predicate);
-            }
             if (includes != null)
-            {
                 foreach (var include in includes)
-                {
                     query = query.Include(include);
-                }
-            }
 
-            return query.FirstOrDefault();
+            return await query.FirstOrDefaultAsync();
         }
 
-        public T CrearUno(T entity)
+        public async Task<T> CrearUno(T entity)
         {
-            _db.Add(entity);
-            Guardar();
+            await _db.AddAsync(entity);
+            await Guardar();
             return entity;
         }
 
-        public T ActualizarUno(T entity)
+        public async Task<T> ActualizarUno(T entity)
         {
             _db.Update(entity);
-            Guardar();
+            await Guardar();
             return entity;
         }
 
-        public void EliminarUno(T entity)
+        public async Task EliminarUno(T entity)
         {
             _db.Remove(entity);
-            Guardar();
+            await Guardar();
         }
 
-        public void Guardar()
+        public async Task Guardar()
         {
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
-
     }
 }

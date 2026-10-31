@@ -16,7 +16,7 @@ namespace Backend_Prog4.Config
 
         public DbSet<Pedido> Pedidos { get; set; }
         public DbSet<EstadoPedido> EstadoPedidos { get; set; }
-        //public DbSet<Producto> Productos { get; set; }
+        public DbSet<Producto> Productos { get; set; }
 
         public DbSet<Rol> Roles { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
@@ -61,7 +61,18 @@ namespace Backend_Prog4.Config
                r => r.HasOne<Usuario>().WithMany().HasForeignKey(e => e.UsuarioId)
            );
 
-            //modelBuilder.Entity<Producto>().
+
+            modelBuilder.Entity<Producto>()
+            .HasOne(p => p.Categoria)
+            .WithMany()
+            .HasForeignKey(p => p.CategoriaId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Producto>()
+            .HasOne(p => p.Marca)
+            .WithMany()
+            .HasForeignKey(p => p.MarcaId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         }
     }

@@ -45,6 +45,8 @@ builder.Services.AddScoped<IAuthService, AuthServices>(); // v
 builder.Services.AddScoped<UsuariosService>(); // v
 builder.Services.AddScoped<IEncoderServices, EncoderServices>(); // v
 builder.Services.AddScoped<MarcaServices>(); // v
+builder.Services.AddScoped<ProductoServices>();
+builder.Services.AddScoped<ProductoTalleServices>();
 
 // Repositorios ->
 
@@ -53,6 +55,8 @@ builder.Services.AddScoped<IRepository<Talle>, Repository<Talle>>(); // v
 builder.Services.AddScoped<IRepository<Usuario>, Repository<Usuario>>(); // v 
 builder.Services.AddScoped<IRepository<Rol>, Repository<Rol>>(); // v
 builder.Services.AddScoped<IRepository<Marca>,Repository<Marca>>(); // v
+builder.Services.AddScoped<IRepository<Producto>, Repository<Producto>>();
+builder.Services.AddScoped<IRepository<ProductoTalle>, Repository<ProductoTalle>>();
 
 
 // conficuracion de db : 

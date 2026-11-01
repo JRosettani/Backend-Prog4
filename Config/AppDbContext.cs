@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using panaderia.Models;
 
+
 namespace Backend_Prog4.Config
 {
     public class AppDbContext : DbContext

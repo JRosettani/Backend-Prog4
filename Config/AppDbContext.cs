@@ -22,6 +22,8 @@ namespace Backend_Prog4.Config
         public DbSet<Rol> Roles { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
 
+        public DbSet<PedidoItem> PedidoItems { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Categoria>()

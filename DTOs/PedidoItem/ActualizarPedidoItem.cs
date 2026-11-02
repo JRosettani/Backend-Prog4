@@ -1,4 +1,6 @@
-﻿namespace Backend_Prog4.DTOs.PedidoItem
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Backend_Prog4.DTOs.PedidoItem
 {
     public class ActualizarPedidoItem
     {

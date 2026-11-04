@@ -1,5 +1,4 @@
 ﻿using Backend_Prog4.DTOs.Producto;
-using Backend_Prog4.DTOs.Producto.Backend_Prog4.DTOs.Producto;
 using Backend_Prog4.Enums;
 using Backend_Prog4.Services;
 using Backend_Prog4.Utils.Repuestas;

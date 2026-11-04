@@ -1,5 +1,4 @@
 ﻿using Backend_Prog4.DTOs.Producto;
-using Backend_Prog4.DTOs.Producto.Backend_Prog4.DTOs.Producto;
 using Backend_Prog4.Models;
 using Backend_Prog4.Repositories;
 using Backend_Prog4.Utils.Repuestas;
@@ -17,7 +16,7 @@ namespace Backend_Prog4.Services
             _repo = repo;
         }
 
-        public async Task<List<Producto>> ObtenerTodos()
+        public async Task<List<ProductoDTO>> ObtenerTodos()
         {
             var lista = await _repo.ObtenerTodos();
             return lista;
@@ -69,14 +68,24 @@ namespace Backend_Prog4.Services
                 prod.Descripcion = dto.Descripcion;
             }
 
-            if (dto.Precio != 0)
+            if (dto.Precio.HasValue)
             {
-                prod.Precio = dto.Precio;
+                prod.Precio = (decimal)dto.Precio;
             }
 
             if (dto.ImagenUrl != null)
             {
                 prod.ImagenUrl = dto.ImagenUrl;
+            }
+
+            if (dto.CategoriaId.HasValue)
+            {
+                prod.CategoriaId = dto.CategoriaId.Value;
+            }
+
+            if (dto.MarcaId.HasValue)
+            {
+                prod.MarcaId = dto.MarcaId.Value;
             }
 
             await _repo.ActualizarUno(prod);

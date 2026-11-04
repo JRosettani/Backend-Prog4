@@ -58,6 +58,13 @@ namespace Backend_Prog4.Config
                 new Rol() { Id = 2, Nombre = "User" }
             );
 
+            modelBuilder.Entity<EstadoPedido>().HasData(
+               new EstadoPedido() { Id = 1, Nombre = "Pendiente" },
+               new EstadoPedido() { Id = 2, Nombre = "Pagado" },
+               new EstadoPedido() { Id = 3, Nombre = "Cancelado" }
+           );
+
+
             modelBuilder.Entity<Usuario>()
            .HasMany(p => p.Roles).WithMany()
            .UsingEntity<UsuarioRol>(

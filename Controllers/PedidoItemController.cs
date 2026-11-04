@@ -79,7 +79,7 @@ namespace Backend_Prog4.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(Respuesta), StatusCodes.Status201Created)]
-        [Authorize(Roles = ROL.ADMIN)]
+        [Authorize(Roles = ROL.USER)]
         public async Task<ActionResult<Respuesta>> CrearUno(
             [FromBody] CrearPedidoItem dto)
         {

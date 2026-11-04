@@ -114,6 +114,40 @@ namespace Backend_Prog4.Migrations
                     b.ToTable("Pedidos");
                 });
 
+            modelBuilder.Entity("Backend_Prog4.Models.PedidoItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Cantidad")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PedidoId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("PrecioUnitario")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ProductoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TalleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PedidoId");
+
+                    b.HasIndex("ProductoId");
+
+                    b.HasIndex("TalleId");
+
+                    b.ToTable("PedidoItems");
+                });
+
             modelBuilder.Entity("Backend_Prog4.Models.Producto", b =>
                 {
                     b.Property<int>("Id")
@@ -280,6 +314,33 @@ namespace Backend_Prog4.Migrations
                     b.Navigation("EstadoPedido");
 
                     b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("Backend_Prog4.Models.PedidoItem", b =>
+                {
+                    b.HasOne("Backend_Prog4.Models.Pedido", "pedido")
+                        .WithMany()
+                        .HasForeignKey("PedidoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Backend_Prog4.Models.Producto", "producto")
+                        .WithMany()
+                        .HasForeignKey("ProductoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Backend_Prog4.Models.Talle", "talle")
+                        .WithMany()
+                        .HasForeignKey("TalleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("pedido");
+
+                    b.Navigation("producto");
+
+                    b.Navigation("talle");
                 });
 
             modelBuilder.Entity("Backend_Prog4.Models.Producto", b =>

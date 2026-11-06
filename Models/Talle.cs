@@ -12,5 +12,8 @@ namespace Backend_Prog4.Models
 
         public string Nombre { get; set; } = string.Empty;
 
+        public List<ProductoTalle> ProductoTalles { get; set; } = new();    
+
+
     }
 }

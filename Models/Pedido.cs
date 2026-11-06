@@ -8,14 +8,19 @@ namespace Backend_Prog4.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+
         public DateTime Fecha { get; set; }
 
+        [ForeignKey(nameof(EstadoPedido))]
         public int IdEstado { get; set; }
         public EstadoPedido EstadoPedido { get; set; } = null!;
+
         public decimal Total { get; set; }
+
+        [ForeignKey(nameof(Usuario))]
         public int UsuarioId { get; set; }
         public Usuario Usuario { get; set; } = null!;
 
-          //public List<PedidoItem> PedidoItems { get; set; } = new();
+         public List<PedidoItem> PedidoItems { get; set; } = new();
     }
 }

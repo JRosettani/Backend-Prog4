@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using panaderia.Models;
 
+
 namespace Backend_Prog4.Config
 {
     public class AppDbContext : DbContext
@@ -18,6 +19,8 @@ namespace Backend_Prog4.Config
         public DbSet<PedidoItem> PedidoItems { get; set; }
         public DbSet<Rol> Roles { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
+
+        public DbSet<PedidoItem> PedidoItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -40,7 +43,17 @@ namespace Backend_Prog4.Config
                 new Rol() { Id = 2, Nombre = "User" }
             );
 
+<<<<<<< HEAD
             // Usuario ↔ Rol (many-to-many con entidad intermedia)
+=======
+            modelBuilder.Entity<EstadoPedido>().HasData(
+               new EstadoPedido() { Id = 1, Nombre = "Pendiente" },
+               new EstadoPedido() { Id = 2, Nombre = "Pagado" },
+               new EstadoPedido() { Id = 3, Nombre = "Cancelado" }
+           );
+
+
+>>>>>>> 2f598e8ece983067f9efbe45b82bb3d8eb318360
             modelBuilder.Entity<Usuario>()
                 .HasMany(u => u.Roles).WithMany()
                 .UsingEntity<UsuarioRol>(

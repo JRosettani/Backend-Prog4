@@ -44,6 +44,7 @@ builder.Services.AddScoped<IEncoderServices, EncoderServices>();
 builder.Services.AddScoped<MarcaServices>();
 builder.Services.AddScoped<PedidoService>();
 
+<<<<<<< HEAD
 // Repositorios
 builder.Services.AddScoped<IRepository<Categoria>, Repository<Categoria>>();
 builder.Services.AddScoped<IRepository<Talle>, Repository<Talle>>();
@@ -54,6 +55,32 @@ builder.Services.AddScoped<IRepository<Pedido>, Repository<Pedido>>();
 builder.Services.AddScoped<IRepository<EstadoPedido>, Repository<EstadoPedido>>();
 builder.Services.AddScoped<IRepository<ProductoTalle>, Repository<ProductoTalle>>();
 builder.Services.AddScoped<IRepository<PedidoItem>, Repository<PedidoItem>>();
+=======
+builder.Services.AddScoped<CategoriasService>(); // v
+builder.Services.AddScoped<TallesService>(); // v
+builder.Services.AddScoped<RolesService>(); // v
+builder.Services.AddScoped<IAuthService, AuthServices>(); // v
+builder.Services.AddScoped<UsuariosService>(); // v
+builder.Services.AddScoped<IEncoderServices, EncoderServices>(); // v
+builder.Services.AddScoped<MarcaServices>(); // v
+builder.Services.AddScoped<ProductoServices>();
+builder.Services.AddScoped<ProductoTalleServices>();
+builder.Services.AddScoped<PedidoItemServices>();
+
+// Repositorios ->
+
+builder.Services.AddScoped<IRepository<Categoria>, Repository<Categoria>>(); //  v
+builder.Services.AddScoped<IRepository<Talle>, Repository<Talle>>(); // v
+builder.Services.AddScoped<IRepository<Usuario>, Repository<Usuario>>(); // v 
+builder.Services.AddScoped<IRepository<Rol>, Repository<Rol>>(); // v
+builder.Services.AddScoped<IRepository<Marca>,Repository<Marca>>(); // v
+builder.Services.AddScoped<IRepository<Producto>, Repository<Producto>>();
+builder.Services.AddScoped<IRepository<ProductoTalle>, Repository<ProductoTalle>>();
+builder.Services.AddScoped<IRepository<PedidoItem>, Repository<PedidoItem>>();
+
+
+// conficuracion de db : 
+>>>>>>> 2f598e8ece983067f9efbe45b82bb3d8eb318360
 
 // DB
 builder.Services.AddDbContext<AppDbContext>(options =>

@@ -9,9 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-
 var builder = WebApplication.CreateBuilder(args);
-
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -36,43 +34,38 @@ builder.Services.AddSwaggerGen(c =>
     c.OperationFilter<AuthOperationFilter>();
 });
 
-// inyeccion de dependencia
+// Servicios
+builder.Services.AddScoped<CategoriasService>();
+builder.Services.AddScoped<TallesService>();
+builder.Services.AddScoped<RolesService>();
+builder.Services.AddScoped<IAuthService, AuthServices>();
+builder.Services.AddScoped<UsuariosService>();
+builder.Services.AddScoped<IEncoderServices, EncoderServices>();
+builder.Services.AddScoped<MarcaServices>();
+builder.Services.AddScoped<PedidoService>();
 
-builder.Services.AddScoped<CategoriasService>(); // v
-builder.Services.AddScoped<TallesService>(); // v
-builder.Services.AddScoped<RolesService>(); // v
-builder.Services.AddScoped<IAuthService, AuthServices>(); // v
-builder.Services.AddScoped<UsuariosService>(); // v
-builder.Services.AddScoped<IEncoderServices, EncoderServices>(); // v
-builder.Services.AddScoped<MarcaServices>(); // v
-builder.Services.AddScoped<ProductoServices>();
-builder.Services.AddScoped<ProductoTalleServices>();
-builder.Services.AddScoped<PedidoItemServices>();
-
-// Repositorios ->
-
-builder.Services.AddScoped<IRepository<Categoria>, Repository<Categoria>>(); //  v
-builder.Services.AddScoped<IRepository<Talle>, Repository<Talle>>(); // v
-builder.Services.AddScoped<IRepository<Usuario>, Repository<Usuario>>(); // v 
-builder.Services.AddScoped<IRepository<Rol>, Repository<Rol>>(); // v
-builder.Services.AddScoped<IRepository<Marca>,Repository<Marca>>(); // v
-builder.Services.AddScoped<IRepository<Producto>, Repository<Producto>>();
+// Repositorios
+builder.Services.AddScoped<IRepository<Categoria>, Repository<Categoria>>();
+builder.Services.AddScoped<IRepository<Talle>, Repository<Talle>>();
+builder.Services.AddScoped<IRepository<Usuario>, Repository<Usuario>>();
+builder.Services.AddScoped<IRepository<Rol>, Repository<Rol>>();
+builder.Services.AddScoped<IRepository<Marca>, Repository<Marca>>();
+builder.Services.AddScoped<IRepository<Pedido>, Repository<Pedido>>();
+builder.Services.AddScoped<IRepository<EstadoPedido>, Repository<EstadoPedido>>();
 builder.Services.AddScoped<IRepository<ProductoTalle>, Repository<ProductoTalle>>();
 builder.Services.AddScoped<IRepository<PedidoItem>, Repository<PedidoItem>>();
 
-
-// conficuracion de db : 
-
+// DB
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     string conn = builder.Configuration.GetConnectionString("dbDev") ?? string.Empty;
     options.UseSqlServer(conn);
 });
 
-// secret
-string secret = builder.Configuration.GetSection("JWT:Secret").Value ?? string.Empty;
+// JWT
+string secret = builder.Configuration.GetSection("JWT:Secret").Value
+    ?? throw new InvalidOperationException("JWT:Secret no configurado");
 
-// Auth
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -88,18 +81,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-
-
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-//middleware de cors que me permite enviar peticiones hacia el back
 
 app.UseCors(opt =>
 {
@@ -108,13 +96,8 @@ app.UseCors(opt =>
     opt.AllowAnyOrigin();
 });
 
-
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

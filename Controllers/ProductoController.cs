@@ -1,5 +1,4 @@
 ﻿using Backend_Prog4.DTOs.Producto;
-using Backend_Prog4.DTOs.Producto.Backend_Prog4.DTOs.Producto;
 using Backend_Prog4.Enums;
 using Backend_Prog4.Services;
 using Backend_Prog4.Utils.Repuestas;
@@ -11,6 +10,7 @@ namespace Backend_Prog4.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public class ProductoController : ControllerBase
     {
@@ -22,6 +22,7 @@ namespace Backend_Prog4.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(Respuesta), StatusCodes.Status200OK)]
         public async Task<ActionResult<Respuesta>> ObtenerTodos()
         {
@@ -38,6 +39,7 @@ namespace Backend_Prog4.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(Respuesta), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Respuesta), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Respuesta>> ObtenerUnoPorId(int id)

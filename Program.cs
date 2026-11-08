@@ -43,6 +43,8 @@ builder.Services.AddScoped<UsuariosService>();
 builder.Services.AddScoped<IEncoderServices, EncoderServices>();
 builder.Services.AddScoped<MarcaServices>();
 builder.Services.AddScoped<PedidoService>();
+builder.Services.AddScoped<ProductoServices>();
+
 
 // Repositorios
 builder.Services.AddScoped<IRepository<Categoria>, Repository<Categoria>>();
@@ -54,6 +56,7 @@ builder.Services.AddScoped<IRepository<Pedido>, Repository<Pedido>>();
 builder.Services.AddScoped<IRepository<EstadoPedido>, Repository<EstadoPedido>>();
 builder.Services.AddScoped<IRepository<ProductoTalle>, Repository<ProductoTalle>>();
 builder.Services.AddScoped<IRepository<PedidoItem>, Repository<PedidoItem>>();
+builder.Services.AddScoped<IRepository<Producto>, Repository<Producto>>();
 
 // DB
 builder.Services.AddDbContext<AppDbContext>(options =>

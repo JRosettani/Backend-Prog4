@@ -21,26 +21,25 @@ namespace Backend_Prog4.Services
             var lista = await _repo.ObtenerTodos(
                 includes: new System.Linq.Expressions.Expression<Func<PedidoItem, object>>[]
                 {
-                p => p.pedido,
-                p => p.producto,
-                p => p.talle
+                    p => p.Pedido,    // ← P mayúscula
+                    p => p.Producto,  // ← P mayúscula
+                    p => p.Talle      // ← T mayúscula
                 }
             );
-
             return lista;
         }
 
         public async Task<PedidoItem> ObtenerUnoPorId(int id)
         {
             var item = await _repo.ObtenerUno(
-                p => p.Id == id,
-                new System.Linq.Expressions.Expression<Func<PedidoItem, object>>[]
-                {
-                p => p.pedido,
-                p => p.producto,
-                p => p.talle
-                }
-            );
+            p => p.Id == id,
+            new System.Linq.Expressions.Expression<Func<PedidoItem, object>>[]
+            {
+                p => p.Pedido,    // ← P mayúscula
+                p => p.Producto,  // ← P mayúscula
+                p => p.Talle      // ← T mayúscula
+            }
+        );
 
             if (item == null)
             {

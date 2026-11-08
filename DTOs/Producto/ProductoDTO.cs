@@ -8,8 +8,9 @@
         public decimal Precio { get; set; }
         public string ImagenUrl { get; set; } = string.Empty;
         public int MarcaId { get; set; }
+        public string MarcaNombre { get; set; } = string.Empty;
         public int CategoriaId { get; set; }
-
-        // Capaz que nos sirve como DTO de salida, sino lo sacamos.
+        public string CategoriaNombre { get; set; } = string.Empty;
+        public List<ProductoTalleDTO> Talles { get; set; } = new();
     }
 }

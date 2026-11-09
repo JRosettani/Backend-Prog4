@@ -1,3 +1,4 @@
+
 using Backend_Prog4.Config;
 using Backend_Prog4.Models;
 using Backend_Prog4.Repositories;
@@ -11,8 +12,11 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Controllers
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+// Swagger
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new()
@@ -45,23 +49,15 @@ builder.Services.AddScoped<MarcaServices>();
 builder.Services.AddScoped<PedidoService>();
 builder.Services.AddScoped<ProductoServices>();
 
+// Repositorios genéricos
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
-// Repositorios
-builder.Services.AddScoped<IRepository<Categoria>, Repository<Categoria>>();
-builder.Services.AddScoped<IRepository<Talle>, Repository<Talle>>();
-builder.Services.AddScoped<IRepository<Usuario>, Repository<Usuario>>();
-builder.Services.AddScoped<IRepository<Rol>, Repository<Rol>>();
-builder.Services.AddScoped<IRepository<Marca>, Repository<Marca>>();
-builder.Services.AddScoped<IRepository<Pedido>, Repository<Pedido>>();
-builder.Services.AddScoped<IRepository<EstadoPedido>, Repository<EstadoPedido>>();
-builder.Services.AddScoped<IRepository<ProductoTalle>, Repository<ProductoTalle>>();
-builder.Services.AddScoped<IRepository<PedidoItem>, Repository<PedidoItem>>();
-builder.Services.AddScoped<IRepository<Producto>, Repository<Producto>>();
-
-// DB
+// Base de datos
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    string conn = builder.Configuration.GetConnectionString("dbDev") ?? string.Empty;
+    string conn = builder.Configuration.GetConnectionString("dbDev")
+        ?? string.Empty;
+
     options.UseSqlServer(conn);
 });
 
@@ -73,7 +69,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.SaveToken = true;
+
         var key = Encoding.UTF8.GetBytes(secret);
+
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
@@ -86,12 +84,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 var app = builder.Build();
 
+// Swagger
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
+// CORS
 app.UseCors(opt =>
 {
     opt.AllowAnyHeader();
@@ -99,8 +99,12 @@ app.UseCors(opt =>
     opt.AllowAnyOrigin();
 });
 
+// Middleware
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Controllers
 app.MapControllers();
+
 app.Run();

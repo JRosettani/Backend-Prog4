@@ -185,52 +185,49 @@ namespace Backend_Prog4.Services
         }
 
         // PUT: Actualizar solamente el estado
-        public async Task<Pedido> ActualizarEstado(
-            int id,
-            ActualizarPedidoDTO dto)
+        public async Task<ActualizarEstadoPedidoRespuestaDTO> ActualizarEstado(int id, ActualizarPedidoDTO dto)
         {
+            // Buscar el pedido con su estado actual
             var pedido = await _pedidoRepo.ObtenerUno(
                 p => p.Id == id,
                 includes: new Expression<Func<Pedido, object>>[]
                 {
-                    p => p.EstadoPedido
+            p => p.EstadoPedido
                 }
-            );
+            ) ?? throw new RespuestaError("Pedido no encontrado", HttpStatusCode.NotFound);
 
-            if (pedido == null)
-                throw new RespuestaError(
-                    "Pedido no encontrado",
-                    HttpStatusCode.NotFound
-                );
-
+            // No se puede modificar un pedido cancelado
             if (pedido.EstadoPedido.Nombre == "Cancelado")
                 throw new RespuestaError(
                     "No se puede modificar un pedido cancelado",
                     HttpStatusCode.BadRequest
                 );
 
-            var nuevoEstado = await _estadoRepo.ObtenerUno(
-                e => e.Id == dto.IdEstado
-            );
+            // Verificar que el nuevo estado existe
+            var nuevoEstado = await _estadoRepo.ObtenerUno(e => e.Id == dto.IdEstado)
+                ?? throw new RespuestaError("Estado de pedido no encontrado", HttpStatusCode.NotFound);
 
-            if (nuevoEstado == null)
-                throw new RespuestaError(
-                    "Estado de pedido no encontrado",
-                    HttpStatusCode.NotFound
-                );
-
+            // Cancelar debe hacerse por DELETE, no por PUT
             if (nuevoEstado.Nombre == "Cancelado")
                 throw new RespuestaError(
                     "Para cancelar un pedido utilizá DELETE",
                     HttpStatusCode.BadRequest
                 );
 
+            // Guardar el nombre del estado anterior para la respuesta
+            var estadoAnterior = pedido.EstadoPedido.Nombre;
+
+            // Actualizar el estado
             pedido.IdEstado = nuevoEstado.Id;
             pedido.EstadoPedido = nuevoEstado;
-
             await _pedidoRepo.ActualizarUno(pedido);
 
-            return pedido;
+            return new ActualizarEstadoPedidoRespuestaDTO
+            {
+                Id = pedido.Id,
+                EstadoAnterior = estadoAnterior,
+                EstadoNuevo = nuevoEstado.Nombre
+            };
         }
 
         // DELETE: Cancelar pedido y devolver stock

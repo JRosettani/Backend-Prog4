@@ -1,6 +1,5 @@
 ﻿using Backend_Prog4.Models;
 using Microsoft.EntityFrameworkCore;
-using panaderia.Models;
 
 namespace Backend_Prog4.Config
 {
@@ -67,10 +66,10 @@ namespace Backend_Prog4.Config
                 .HasKey(pt => new { pt.ProductoId, pt.TalleId });
 
             modelBuilder.Entity<ProductoTalle>()
-                .HasOne(pt => pt.Producto)
-                .WithMany(p => p.Talles)
-                .HasForeignKey(pt => pt.ProductoId)
-                .OnDelete(DeleteBehavior.Restrict);
+            .HasOne(pt => pt.Producto)
+            .WithMany(p => p.Talles)
+            .HasForeignKey(pt => pt.ProductoId)
+            .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ProductoTalle>()
                 .HasOne(pt => pt.Talle)

@@ -16,8 +16,9 @@ namespace Backend_Prog4.Repositories
         }
 
         public async Task<List<T>> ObtenerTodos(
-            Expression<Func<T, bool>>? predicate = null,
-            Expression<Func<T, object>>[]? includes = null)
+     Expression<Func<T, bool>>? predicate = null,
+     Expression<Func<T, object>>[]? includes = null,
+     Func<IQueryable<T>, IQueryable<T>>? thenIncludes = null)
         {
             IQueryable<T> query = _dbSet;
             if (predicate != null)
@@ -25,13 +26,16 @@ namespace Backend_Prog4.Repositories
             if (includes != null)
                 foreach (var include in includes)
                     query = query.Include(include);
+            if (thenIncludes != null)
+                query = thenIncludes(query);
 
             return await query.ToListAsync();
         }
 
         public async Task<T?> ObtenerUno(
             Expression<Func<T, bool>>? predicate = null,
-            Expression<Func<T, object>>[]? includes = null)
+            Expression<Func<T, object>>[]? includes = null,
+            Func<IQueryable<T>, IQueryable<T>>? thenIncludes = null)
         {
             IQueryable<T> query = _dbSet;
             if (predicate != null)
@@ -39,6 +43,8 @@ namespace Backend_Prog4.Repositories
             if (includes != null)
                 foreach (var include in includes)
                     query = query.Include(include);
+            if (thenIncludes != null)
+                query = thenIncludes(query);
 
             return await query.FirstOrDefaultAsync();
         }

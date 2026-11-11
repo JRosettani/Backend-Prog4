@@ -90,9 +90,6 @@ namespace Backend_Prog4.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("EstadoPedidoId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2");
 
@@ -107,7 +104,7 @@ namespace Backend_Prog4.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EstadoPedidoId");
+                    b.HasIndex("IdEstado");
 
                     b.HasIndex("UsuarioId");
 
@@ -201,7 +198,7 @@ namespace Backend_Prog4.Migrations
 
                     b.HasIndex("TalleId");
 
-                    b.ToTable("ProductoTalle");
+                    b.ToTable("ProductosTalles");
                 });
 
             modelBuilder.Entity("Backend_Prog4.Models.Rol", b =>
@@ -233,26 +230,6 @@ namespace Backend_Prog4.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Backend_Prog4.Models.Talle", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Nombre")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Nombre")
-                        .IsUnique();
-
-                    b.ToTable("Talles");
-                });
-
             modelBuilder.Entity("Backend_Prog4.Models.Usuario", b =>
                 {
                     b.Property<int>("Id")
@@ -282,6 +259,26 @@ namespace Backend_Prog4.Migrations
                     b.ToTable("Usuarios");
                 });
 
+            modelBuilder.Entity("Talle", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Nombre")
+                        .IsUnique();
+
+                    b.ToTable("Talles");
+                });
+
             modelBuilder.Entity("panaderia.Models.UsuarioRol", b =>
                 {
                     b.Property<int>("RolId")
@@ -301,7 +298,7 @@ namespace Backend_Prog4.Migrations
                 {
                     b.HasOne("Backend_Prog4.Models.EstadoPedido", "EstadoPedido")
                         .WithMany()
-                        .HasForeignKey("EstadoPedidoId")
+                        .HasForeignKey("IdEstado")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -318,29 +315,29 @@ namespace Backend_Prog4.Migrations
 
             modelBuilder.Entity("Backend_Prog4.Models.PedidoItem", b =>
                 {
-                    b.HasOne("Backend_Prog4.Models.Pedido", "pedido")
-                        .WithMany()
+                    b.HasOne("Backend_Prog4.Models.Pedido", "Pedido")
+                        .WithMany("PedidoItems")
                         .HasForeignKey("PedidoId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Backend_Prog4.Models.Producto", "producto")
+                    b.HasOne("Backend_Prog4.Models.Producto", "Producto")
                         .WithMany()
                         .HasForeignKey("ProductoId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Backend_Prog4.Models.Talle", "talle")
+                    b.HasOne("Talle", "Talle")
                         .WithMany()
                         .HasForeignKey("TalleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("pedido");
+                    b.Navigation("Pedido");
 
-                    b.Navigation("producto");
+                    b.Navigation("Producto");
 
-                    b.Navigation("talle");
+                    b.Navigation("Talle");
                 });
 
             modelBuilder.Entity("Backend_Prog4.Models.Producto", b =>
@@ -370,10 +367,10 @@ namespace Backend_Prog4.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Backend_Prog4.Models.Talle", "Talle")
-                        .WithMany()
+                    b.HasOne("Talle", "Talle")
+                        .WithMany("ProductoTalles")
                         .HasForeignKey("TalleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Producto");
@@ -396,9 +393,19 @@ namespace Backend_Prog4.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Backend_Prog4.Models.Pedido", b =>
+                {
+                    b.Navigation("PedidoItems");
+                });
+
             modelBuilder.Entity("Backend_Prog4.Models.Producto", b =>
                 {
                     b.Navigation("Talles");
+                });
+
+            modelBuilder.Entity("Talle", b =>
+                {
+                    b.Navigation("ProductoTalles");
                 });
 #pragma warning restore 612, 618
         }

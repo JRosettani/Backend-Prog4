@@ -56,7 +56,6 @@ public class TallesService
         }
 
         await _repo.ActualizarUno(talle);
-        await _repo.Guardar();
 
         return talle;
     }

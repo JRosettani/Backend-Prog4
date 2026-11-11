@@ -10,6 +10,7 @@ namespace Backend_Prog4.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public class ProductoTalleController : ControllerBase
     {
@@ -21,6 +22,7 @@ namespace Backend_Prog4.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(Respuesta), StatusCodes.Status200OK)]
         public async Task<ActionResult<Respuesta>> ObtenerTodos()
         {
@@ -37,6 +39,7 @@ namespace Backend_Prog4.Controllers
         }
 
         [HttpGet("{productoId}/{talleId}")]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(Respuesta), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Respuesta), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Respuesta>> ObtenerUnoPorId(int productoId, int talleId)

@@ -1,4 +1,4 @@
-﻿namespace panaderia.Models;
+﻿namespace Backend_Prog4.Models;
 
 public class UsuarioRol
 {

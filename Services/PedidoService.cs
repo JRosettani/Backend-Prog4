@@ -5,6 +5,7 @@ using Backend_Prog4.DTOs.Pedido;
 using Backend_Prog4.Models;
 using Backend_Prog4.Repositories;
 using Backend_Prog4.Utils.Repuestas;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend_Prog4.Services
 {
@@ -28,80 +29,134 @@ namespace Backend_Prog4.Services
         }
 
         // GET: Obtener todos los pedidos
-        public async Task<List<Pedido>> ObtenerTodos()
+        public async Task<List<PedidoRespuestaDTO>> ObtenerTodos()
         {
-            return await _pedidoRepo.ObtenerTodos(
-                includes: new Expression<Func<Pedido, object>>[]
-                {
-                    p => p.Usuario,
-                    p => p.EstadoPedido,
-                    p => p.PedidoItems
-                }
+            var pedidos = await _pedidoRepo.ObtenerTodos(
+                thenIncludes: q => q
+                    .Include(p => p.Usuario)
+                    .Include(p => p.EstadoPedido)
+                    .Include(p => p.PedidoItems)
+                        .ThenInclude(i => i.Producto)
+                    .Include(p => p.PedidoItems)
+                        .ThenInclude(i => i.Talle)
             );
+
+            return pedidos.Select(p => new PedidoRespuestaDTO
+            {
+                Id = p.Id,
+                Fecha = p.Fecha,
+                Total = p.Total,
+                EstadoNombre = p.EstadoPedido.Nombre,
+                UsuarioEmail = p.Usuario.Email,
+                Items = p.PedidoItems.Select(i => new PedidoItemRespuestaDTO
+                {
+                    Cantidad = i.Cantidad,
+                    PrecioUnitario = i.PrecioUnitario,
+                    ProductoNombre = i.Producto.Nombre,
+                    TalleNombre = i.Talle.Nombre
+                }).ToList()
+            }).ToList();
         }
 
         // GET: Obtener un pedido por ID
-        public async Task<Pedido> ObtenerUnoPorId(int id)
+        public async Task<PedidoRespuestaDTO> ObtenerUnoPorId(int id)
         {
             var pedido = await _pedidoRepo.ObtenerUno(
                 p => p.Id == id,
-                includes: new Expression<Func<Pedido, object>>[]
+                thenIncludes: q => q
+                    .Include(p => p.Usuario)
+                    .Include(p => p.EstadoPedido)
+                    .Include(p => p.PedidoItems)
+                        .ThenInclude(i => i.Producto)
+                    .Include(p => p.PedidoItems)
+                        .ThenInclude(i => i.Talle)
+            ) ?? throw new RespuestaError("Pedido no encontrado", HttpStatusCode.NotFound);
+
+            return new PedidoRespuestaDTO
+            {
+                Id = pedido.Id,
+                Fecha = pedido.Fecha,
+                Total = pedido.Total,
+                EstadoNombre = pedido.EstadoPedido.Nombre,
+                UsuarioEmail = pedido.Usuario.Email,
+                Items = pedido.PedidoItems.Select(i => new PedidoItemRespuestaDTO
                 {
-                    p => p.Usuario,
-                    p => p.EstadoPedido,
-                    p => p.PedidoItems
-                }
+                    Cantidad = i.Cantidad,
+                    PrecioUnitario = i.PrecioUnitario,
+                    ProductoNombre = i.Producto.Nombre,
+                    TalleNombre = i.Talle.Nombre
+                }).ToList()
+            };
+        }
+
+        // GET: Buscar pedidos pendientes por email del cliente
+        public async Task<List<PedidoRespuestaDTO>> ObtenerPorEmail(string email)
+        {
+            var usuario = await _usuarioRepo.ObtenerUno(u => u.Email == email)
+                ?? throw new RespuestaError("Usuario no encontrado", HttpStatusCode.NotFound);
+
+            var pedidos = await _pedidoRepo.ObtenerTodos(
+                predicate: p => p.UsuarioId == usuario.Id && p.EstadoPedido.Nombre == "Pendiente",
+                thenIncludes: q => q
+                    .Include(p => p.Usuario)
+                    .Include(p => p.EstadoPedido)
+                    .Include(p => p.PedidoItems)
+                        .ThenInclude(i => i.Producto)
+                    .Include(p => p.PedidoItems)
+                        .ThenInclude(i => i.Talle)
             );
 
-            if (pedido == null)
-                throw new RespuestaError(
-                    "Pedido no encontrado",
-                    HttpStatusCode.NotFound
-                );
-
-            return pedido;
+            return pedidos.Select(p => new PedidoRespuestaDTO
+            {
+                Id = p.Id,
+                Fecha = p.Fecha,
+                Total = p.Total,
+                EstadoNombre = p.EstadoPedido.Nombre,
+                UsuarioEmail = p.Usuario.Email,
+                Items = p.PedidoItems.Select(i => new PedidoItemRespuestaDTO
+                {
+                    Cantidad = i.Cantidad,
+                    PrecioUnitario = i.PrecioUnitario,
+                    ProductoNombre = i.Producto.Nombre,
+                    TalleNombre = i.Talle.Nombre
+                }).ToList()
+            }).ToList();
         }
 
         // POST: Crear un pedido
-        public async Task<Pedido> CrearPedido(CrearPedidoDTO dto)
+        public async Task<PedidoRespuestaDTO> CrearPedido(int usuarioId, CrearPedidoDTO dto)
         {
+            // Validar que el pedido tenga al menos un item
             if (dto.Items == null || dto.Items.Count == 0)
                 throw new RespuestaError(
                     "El pedido debe contener al menos un producto",
                     HttpStatusCode.BadRequest
                 );
 
+            // Validar que todas las cantidades sean mayores a cero
             if (dto.Items.Any(i => i.Cantidad <= 0))
                 throw new RespuestaError(
                     "Las cantidades deben ser mayores a cero",
                     HttpStatusCode.BadRequest
                 );
 
-            var usuario = await _usuarioRepo.ObtenerUno(
-                u => u.Id == dto.UsuarioId
-            );
+            // Verificar que el usuario existe en la DB
+            var usuario = await _usuarioRepo.ObtenerUno(u => u.Id == usuarioId)
+                ?? throw new RespuestaError("Usuario no encontrado", HttpStatusCode.NotFound);
 
-            if (usuario == null)
-                throw new RespuestaError(
-                    "Usuario no encontrado",
-                    HttpStatusCode.NotFound
-                );
-
-            var estadoPendiente = await _estadoRepo.ObtenerUno(
-                e => e.Nombre == "Pendiente"
-            );
-
-            if (estadoPendiente == null)
-                throw new RespuestaError(
-                    "Estado 'Pendiente' no configurado",
-                    HttpStatusCode.InternalServerError
-                );
+            // Obtener el estado "Pendiente" (debe estar cargado en la DB)
+            var estadoPendiente = await _estadoRepo.ObtenerUno(e => e.Nombre == "Pendiente")
+                ?? throw new RespuestaError("Estado 'Pendiente' no configurado", HttpStatusCode.InternalServerError);
 
             decimal total = 0;
-
             var itemsParaCrear = new List<PedidoItem>();
 
-            // Agrupar productos repetidos
+            // Lista para guardar las variantes validadas y luego descontar stock
+            // Se separa en dos pasos para no descontar stock si algún item falla la validación
+            var variantes = new List<(ProductoTalle Variante, int Cantidad)>();
+
+            // Agrupar items por ProductoId + TalleId para evitar procesar duplicados
+            // Ej: si mandan 2 veces el mismo producto/talle, se suman las cantidades
             var grupos = dto.Items
                 .GroupBy(i => new { i.ProductoId, i.TalleId })
                 .Select(g => new
@@ -112,34 +167,35 @@ namespace Backend_Prog4.Services
                 })
                 .ToList();
 
-            var variantes = new List<(ProductoTalle Variante, int Cantidad)>();
-
-            // Validar stock y productos
+            // Validar existencia y stock de cada variante (producto + talle)
             foreach (var item in grupos)
             {
+                // Buscar el ProductoTalle con sus navegaciones para acceder a Nombre y Precio
                 var productoTalle = await _productoTalleRepo.ObtenerUno(
-                    pt => pt.ProductoId == item.ProductoId &&
-                          pt.TalleId == item.TalleId,
+                    pt => pt.ProductoId == item.ProductoId && pt.TalleId == item.TalleId,
                     includes: new Expression<Func<ProductoTalle, object>>[]
                     {
-                        pt => pt.Producto
+                pt => pt.Producto,  // para acceder a Nombre y Precio
+                pt => pt.Talle      // para acceder a Nombre del talle
                     }
+                ) ?? throw new RespuestaError(
+                    "El producto con ese talle no existe",
+                    HttpStatusCode.NotFound
                 );
 
-                if (productoTalle == null)
-                    throw new RespuestaError(
-                        "El producto con ese talle no existe",
-                        HttpStatusCode.NotFound
-                    );
-
+                // Verificar que hay suficiente stock disponible
                 if (productoTalle.Stock < item.Cantidad)
                     throw new RespuestaError(
                         $"Stock insuficiente para {productoTalle.Producto.Nombre}",
                         HttpStatusCode.BadRequest
                     );
 
+                // Guardar la variante validada para descontar stock después
                 variantes.Add((productoTalle, item.Cantidad));
 
+                // Construir el PedidoItem con el precio actual del producto
+                // PrecioUnitario se guarda para mantener el precio histórico
+                // aunque el producto cambie de precio en el futuro
                 itemsParaCrear.Add(new PedidoItem
                 {
                     ProductoId = item.ProductoId,
@@ -148,82 +204,91 @@ namespace Backend_Prog4.Services
                     PrecioUnitario = productoTalle.Producto.Precio
                 });
 
+                // Acumular el total del pedido
                 total += productoTalle.Producto.Precio * item.Cantidad;
             }
 
-            // Descontar stock
+            // Descontar stock solo si todas las validaciones pasaron
             foreach (var variante in variantes)
             {
                 variante.Variante.Stock -= variante.Cantidad;
-
-                await _productoTalleRepo.ActualizarUno(
-                    variante.Variante
-                );
+                await _productoTalleRepo.ActualizarUno(variante.Variante);
             }
 
-            // Crear pedido
+            // Construir y persistir el pedido con todos sus items
             var pedido = new Pedido
             {
                 Fecha = DateTime.Now,
-                UsuarioId = dto.UsuarioId,
+                UsuarioId = usuarioId,
                 IdEstado = estadoPendiente.Id,
-                EstadoPedido = estadoPendiente,
                 Total = total,
-                PedidoItems = itemsParaCrear
+                PedidoItems = itemsParaCrear  // EF Core guarda los items automáticamente
             };
 
-            await _pedidoRepo.CrearUno(pedido);
+            var pedidoCreado = await _pedidoRepo.CrearUno(pedido);
 
-            return pedido;
+            // Mapear a DTO de respuesta para evitar la referencia circular
+            // Pedido → PedidoItems → PedidoItem.Pedido → PedidoItems → ...
+            return new PedidoRespuestaDTO
+            {
+                Id = pedidoCreado.Id,
+                Fecha = pedidoCreado.Fecha,
+                Total = pedidoCreado.Total,
+                EstadoNombre = estadoPendiente.Nombre,
+                Items = variantes.Select(v => new PedidoItemRespuestaDTO
+                {
+                    Cantidad = v.Cantidad,
+                    PrecioUnitario = v.Variante.Producto.Precio,
+                    ProductoNombre = v.Variante.Producto.Nombre,
+                    TalleNombre = v.Variante.Talle.Nombre
+                }).ToList()
+            };
         }
 
         // PUT: Actualizar solamente el estado
-        public async Task<Pedido> ActualizarEstado(
-            int id,
-            ActualizarPedidoDTO dto)
+        public async Task<ActualizarEstadoPedidoRespuestaDTO> ActualizarEstado(int id, ActualizarPedidoDTO dto)
         {
+            // Buscar el pedido con su estado actual
             var pedido = await _pedidoRepo.ObtenerUno(
                 p => p.Id == id,
                 includes: new Expression<Func<Pedido, object>>[]
                 {
-                    p => p.EstadoPedido
+            p => p.EstadoPedido
                 }
-            );
+            ) ?? throw new RespuestaError("Pedido no encontrado", HttpStatusCode.NotFound);
 
-            if (pedido == null)
-                throw new RespuestaError(
-                    "Pedido no encontrado",
-                    HttpStatusCode.NotFound
-                );
-
+            // No se puede modificar un pedido cancelado
             if (pedido.EstadoPedido.Nombre == "Cancelado")
                 throw new RespuestaError(
                     "No se puede modificar un pedido cancelado",
                     HttpStatusCode.BadRequest
                 );
 
-            var nuevoEstado = await _estadoRepo.ObtenerUno(
-                e => e.Id == dto.IdEstado
-            );
+            // Verificar que el nuevo estado existe
+            var nuevoEstado = await _estadoRepo.ObtenerUno(e => e.Id == dto.IdEstado)
+                ?? throw new RespuestaError("Estado de pedido no encontrado", HttpStatusCode.NotFound);
 
-            if (nuevoEstado == null)
-                throw new RespuestaError(
-                    "Estado de pedido no encontrado",
-                    HttpStatusCode.NotFound
-                );
-
+            // Cancelar debe hacerse por DELETE, no por PUT
             if (nuevoEstado.Nombre == "Cancelado")
                 throw new RespuestaError(
                     "Para cancelar un pedido utilizá DELETE",
                     HttpStatusCode.BadRequest
                 );
 
+            // Guardar el nombre del estado anterior para la respuesta
+            var estadoAnterior = pedido.EstadoPedido.Nombre;
+
+            // Actualizar el estado
             pedido.IdEstado = nuevoEstado.Id;
             pedido.EstadoPedido = nuevoEstado;
-
             await _pedidoRepo.ActualizarUno(pedido);
 
-            return pedido;
+            return new ActualizarEstadoPedidoRespuestaDTO
+            {
+                Id = pedido.Id,
+                EstadoAnterior = estadoAnterior,
+                EstadoNuevo = nuevoEstado.Nombre
+            };
         }
 
         // DELETE: Cancelar pedido y devolver stock
@@ -297,5 +362,36 @@ namespace Backend_Prog4.Services
 
             return pedido;
         }
+
+        public async Task<List<PedidoRespuestaDTO>> ObtenerMisPedidos(int usuarioId)
+        {
+            var pedidos = await _pedidoRepo.ObtenerTodos(
+                predicate: p => p.UsuarioId == usuarioId,
+                thenIncludes: q => q
+                    .Include(p => p.Usuario)
+                    .Include(p => p.EstadoPedido)
+                    .Include(p => p.PedidoItems)
+                        .ThenInclude(i => i.Producto)
+                    .Include(p => p.PedidoItems)
+                        .ThenInclude(i => i.Talle)
+            );
+
+            return pedidos.Select(p => new PedidoRespuestaDTO
+            {
+                Id = p.Id,
+                Fecha = p.Fecha,
+                Total = p.Total,
+                EstadoNombre = p.EstadoPedido.Nombre,
+                UsuarioEmail = p.Usuario.Email,
+                Items = p.PedidoItems.Select(i => new PedidoItemRespuestaDTO
+                {
+                    Cantidad = i.Cantidad,
+                    PrecioUnitario = i.PrecioUnitario,
+                    ProductoNombre = i.Producto.Nombre,
+                    TalleNombre = i.Talle.Nombre
+                }).ToList()
+            }).ToList();
+        }
+
     }
 }

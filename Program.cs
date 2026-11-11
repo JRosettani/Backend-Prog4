@@ -48,6 +48,7 @@ builder.Services.AddScoped<IEncoderServices, EncoderServices>();
 builder.Services.AddScoped<MarcaServices>();
 builder.Services.AddScoped<PedidoService>();
 builder.Services.AddScoped<ProductoServices>();
+builder.Services.AddScoped<ProductoTalleServices>();
 
 // Repositorios genéricos
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));

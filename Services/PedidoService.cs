@@ -362,5 +362,36 @@ namespace Backend_Prog4.Services
 
             return pedido;
         }
+
+        public async Task<List<PedidoRespuestaDTO>> ObtenerMisPedidos(int usuarioId)
+        {
+            var pedidos = await _pedidoRepo.ObtenerTodos(
+                predicate: p => p.UsuarioId == usuarioId,
+                thenIncludes: q => q
+                    .Include(p => p.Usuario)
+                    .Include(p => p.EstadoPedido)
+                    .Include(p => p.PedidoItems)
+                        .ThenInclude(i => i.Producto)
+                    .Include(p => p.PedidoItems)
+                        .ThenInclude(i => i.Talle)
+            );
+
+            return pedidos.Select(p => new PedidoRespuestaDTO
+            {
+                Id = p.Id,
+                Fecha = p.Fecha,
+                Total = p.Total,
+                EstadoNombre = p.EstadoPedido.Nombre,
+                UsuarioEmail = p.Usuario.Email,
+                Items = p.PedidoItems.Select(i => new PedidoItemRespuestaDTO
+                {
+                    Cantidad = i.Cantidad,
+                    PrecioUnitario = i.PrecioUnitario,
+                    ProductoNombre = i.Producto.Nombre,
+                    TalleNombre = i.Talle.Nombre
+                }).ToList()
+            }).ToList();
+        }
+
     }
 }

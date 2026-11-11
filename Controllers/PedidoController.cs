@@ -93,31 +93,30 @@ namespace Backend_Prog4.Controllers
             }
         }
 
-        // GET: Obtener pedidos del usuario logueado
-        //[HttpGet("mis-pedidos")]
-        //[Authorize(Roles = $"{ROL.ADMIN},{ROL.USER}")]
-        //public async Task<IActionResult> ObtenerMisPedidos()
-        //{
-        //    try
-        //    {
-        //        var usuarioId = int.Parse(User.FindFirstValue("Id")!);
-        //        var pedidos = await _service.ObtenerPorUsuario(usuarioId);
-        //        RespuestaExito exito = new RespuestaExito(
-        //            "Pedidos obtenidos correctamente",
-        //            HttpStatusCode.OK,
-        //            pedidos
-        //        );
-        //        return StatusCode((int)exito.CodigoEstado, exito.Res);
-        //    }
-        //    catch (RespuestaError error)
-        //    {
-        //        return StatusCode((int)error.CodigoEstado, error.Res);
-        //    }
-        //    catch (Exception error)
-        //    {
-        //        return StatusCode(500, new Respuesta(error.Message));
-        //    }
-        //}
+        [HttpGet("mis-pedidos")]
+        [Authorize(Roles = $"{ROL.ADMIN},{ROL.USER}")]
+        public async Task<IActionResult> ObtenerMisPedidos()
+        {
+            try
+            {
+                var usuarioId = int.Parse(User.FindFirstValue("Id")!);
+                var pedidos = await _service.ObtenerMisPedidos(usuarioId);
+                RespuestaExito exito = new RespuestaExito(
+                    "Pedidos obtenidos correctamente",
+                    HttpStatusCode.OK,
+                    pedidos
+                );
+                return StatusCode((int)exito.CodigoEstado, exito.Res);
+            }
+            catch (RespuestaError error)
+            {
+                return StatusCode((int)error.CodigoEstado, error.Res);
+            }
+            catch (Exception error)
+            {
+                return StatusCode(500, new Respuesta(error.Message));
+            }
+        }
 
         // POST: Crear pedido
         [HttpPost]

@@ -5,6 +5,7 @@ using Backend_Prog4.DTOs.Pedido;
 using Backend_Prog4.Models;
 using Backend_Prog4.Repositories;
 using Backend_Prog4.Utils.Repuestas;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend_Prog4.Services
 {
@@ -28,38 +29,98 @@ namespace Backend_Prog4.Services
         }
 
         // GET: Obtener todos los pedidos
-        public async Task<List<Pedido>> ObtenerTodos()
+        public async Task<List<PedidoRespuestaDTO>> ObtenerTodos()
         {
-            return await _pedidoRepo.ObtenerTodos(
-                includes: new Expression<Func<Pedido, object>>[]
-                {
-                    p => p.Usuario,
-                    p => p.EstadoPedido,
-                    p => p.PedidoItems
-                }
+            var pedidos = await _pedidoRepo.ObtenerTodos(
+                thenIncludes: q => q
+                    .Include(p => p.Usuario)
+                    .Include(p => p.EstadoPedido)
+                    .Include(p => p.PedidoItems)
+                        .ThenInclude(i => i.Producto)
+                    .Include(p => p.PedidoItems)
+                        .ThenInclude(i => i.Talle)
             );
+
+            return pedidos.Select(p => new PedidoRespuestaDTO
+            {
+                Id = p.Id,
+                Fecha = p.Fecha,
+                Total = p.Total,
+                EstadoNombre = p.EstadoPedido.Nombre,
+                UsuarioEmail = p.Usuario.Email,
+                Items = p.PedidoItems.Select(i => new PedidoItemRespuestaDTO
+                {
+                    Cantidad = i.Cantidad,
+                    PrecioUnitario = i.PrecioUnitario,
+                    ProductoNombre = i.Producto.Nombre,
+                    TalleNombre = i.Talle.Nombre
+                }).ToList()
+            }).ToList();
         }
 
         // GET: Obtener un pedido por ID
-        public async Task<Pedido> ObtenerUnoPorId(int id)
+        public async Task<PedidoRespuestaDTO> ObtenerUnoPorId(int id)
         {
             var pedido = await _pedidoRepo.ObtenerUno(
                 p => p.Id == id,
-                includes: new Expression<Func<Pedido, object>>[]
+                thenIncludes: q => q
+                    .Include(p => p.Usuario)
+                    .Include(p => p.EstadoPedido)
+                    .Include(p => p.PedidoItems)
+                        .ThenInclude(i => i.Producto)
+                    .Include(p => p.PedidoItems)
+                        .ThenInclude(i => i.Talle)
+            ) ?? throw new RespuestaError("Pedido no encontrado", HttpStatusCode.NotFound);
+
+            return new PedidoRespuestaDTO
+            {
+                Id = pedido.Id,
+                Fecha = pedido.Fecha,
+                Total = pedido.Total,
+                EstadoNombre = pedido.EstadoPedido.Nombre,
+                UsuarioEmail = pedido.Usuario.Email,
+                Items = pedido.PedidoItems.Select(i => new PedidoItemRespuestaDTO
                 {
-                    p => p.Usuario,
-                    p => p.EstadoPedido,
-                    p => p.PedidoItems
-                }
+                    Cantidad = i.Cantidad,
+                    PrecioUnitario = i.PrecioUnitario,
+                    ProductoNombre = i.Producto.Nombre,
+                    TalleNombre = i.Talle.Nombre
+                }).ToList()
+            };
+        }
+
+        // GET: Buscar pedidos pendientes por email del cliente
+        public async Task<List<PedidoRespuestaDTO>> ObtenerPorEmail(string email)
+        {
+            var usuario = await _usuarioRepo.ObtenerUno(u => u.Email == email)
+                ?? throw new RespuestaError("Usuario no encontrado", HttpStatusCode.NotFound);
+
+            var pedidos = await _pedidoRepo.ObtenerTodos(
+                predicate: p => p.UsuarioId == usuario.Id && p.EstadoPedido.Nombre == "Pendiente",
+                thenIncludes: q => q
+                    .Include(p => p.Usuario)
+                    .Include(p => p.EstadoPedido)
+                    .Include(p => p.PedidoItems)
+                        .ThenInclude(i => i.Producto)
+                    .Include(p => p.PedidoItems)
+                        .ThenInclude(i => i.Talle)
             );
 
-            if (pedido == null)
-                throw new RespuestaError(
-                    "Pedido no encontrado",
-                    HttpStatusCode.NotFound
-                );
-
-            return pedido;
+            return pedidos.Select(p => new PedidoRespuestaDTO
+            {
+                Id = p.Id,
+                Fecha = p.Fecha,
+                Total = p.Total,
+                EstadoNombre = p.EstadoPedido.Nombre,
+                UsuarioEmail = p.Usuario.Email,
+                Items = p.PedidoItems.Select(i => new PedidoItemRespuestaDTO
+                {
+                    Cantidad = i.Cantidad,
+                    PrecioUnitario = i.PrecioUnitario,
+                    ProductoNombre = i.Producto.Nombre,
+                    TalleNombre = i.Talle.Nombre
+                }).ToList()
+            }).ToList();
         }
 
         // POST: Crear un pedido

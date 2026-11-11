@@ -68,6 +68,31 @@ namespace Backend_Prog4.Controllers
             }
         }
 
+        // GET: Buscar pedidos pendientes por email del cliente
+        [HttpGet("cliente/{email}")]
+        [Authorize(Roles = ROL.ADMIN)]
+        public async Task<IActionResult> ObtenerPorEmail(string email)
+        {
+            try
+            {
+                var pedidos = await _service.ObtenerPorEmail(email);
+                RespuestaExito exito = new RespuestaExito(
+                    "Pedidos del cliente obtenidos correctamente",
+                    HttpStatusCode.OK,
+                    pedidos
+                );
+                return StatusCode((int)exito.CodigoEstado, exito.Res);
+            }
+            catch (RespuestaError error)
+            {
+                return StatusCode((int)error.CodigoEstado, error.Res);
+            }
+            catch (Exception error)
+            {
+                return StatusCode(500, new Respuesta(error.Message));
+            }
+        }
+
         // GET: Obtener pedidos del usuario logueado
         //[HttpGet("mis-pedidos")]
         //[Authorize(Roles = $"{ROL.ADMIN},{ROL.USER}")]

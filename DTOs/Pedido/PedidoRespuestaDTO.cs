@@ -6,6 +6,7 @@
         public DateTime Fecha { get; set; }
         public decimal Total { get; set; }
         public string EstadoNombre { get; set; } = string.Empty;
+        public string UsuarioEmail { get; set; } = string.Empty;
         public List<PedidoItemRespuestaDTO> Items { get; set; } = new();
     }
 

@@ -1,6 +1,5 @@
 ﻿using Backend_Prog4.Models;
 using Microsoft.EntityFrameworkCore;
-using panaderia.Models;
 
 namespace Backend_Prog4.Config
 {

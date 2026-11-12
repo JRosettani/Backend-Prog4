@@ -10,6 +10,7 @@ namespace Backend_Prog4.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public class MarcaController : ControllerBase
     {

@@ -169,16 +169,46 @@ namespace Backend_Prog4.Controllers
             }
         }
 
-        // DELETE: Cancelar pedido y devolver stock
-        [HttpDelete("{id}")]
-        [Authorize(Roles = ROL.ADMIN)]
-        public async Task<IActionResult> CancelarPedido(int id)
+        [HttpDelete("mis-pedidos/{id}")]
+        [Authorize(Roles = $"{ROL.ADMIN},{ROL.USER}")]
+        [ProducesResponseType(typeof(Respuesta), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Respuesta), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(Respuesta), StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> CancelarMiPedido(int id)
         {
             try
             {
-                var pedido = await _service.CancelarPedido(id);
+                var usuarioId = int.Parse(User.FindFirstValue("Id")!);
+                await _service.CancelarMiPedido(id, usuarioId);
                 RespuestaExito exito = new RespuestaExito(
                     "Pedido cancelado correctamente. Stock devuelto.",
+                    HttpStatusCode.OK
+                );
+                return StatusCode((int)exito.CodigoEstado, exito.Res);
+            }
+            catch (RespuestaError error)
+            {
+                return StatusCode((int)error.CodigoEstado, error.Res);
+            }
+            catch (Exception error)
+            {
+                return StatusCode(500, new Respuesta(error.Message));
+            }
+        }
+
+        [HttpGet("mis-pedidos/{id}")]
+        [Authorize(Roles = $"{ROL.ADMIN},{ROL.USER}")]
+        [ProducesResponseType(typeof(Respuesta), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Respuesta), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(Respuesta), StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> ObtenerMiPedidoPorId(int id)
+        {
+            try
+            {
+                var usuarioId = int.Parse(User.FindFirstValue("Id")!);
+                var pedido = await _service.ObtenerMiPedidoPorId(id, usuarioId);
+                RespuestaExito exito = new RespuestaExito(
+                    "Pedido obtenido correctamente",
                     HttpStatusCode.OK,
                     pedido
                 );
@@ -193,5 +223,7 @@ namespace Backend_Prog4.Controllers
                 return StatusCode(500, new Respuesta(error.Message));
             }
         }
+
+
     }
 }

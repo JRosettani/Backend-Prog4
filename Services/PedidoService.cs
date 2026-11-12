@@ -393,5 +393,57 @@ namespace Backend_Prog4.Services
             }).ToList();
         }
 
+        // DELETE: Cancelar pedido propio (usuario logueado)
+        public async Task CancelarMiPedido(int id, int usuarioId)
+        {
+            var pedido = await _pedidoRepo.ObtenerUno(
+                p => p.Id == id,
+                includes: new Expression<Func<Pedido, object>>[]
+                {
+            p => p.EstadoPedido,
+            p => p.PedidoItems
+                }
+            ) ?? throw new RespuestaError("Pedido no encontrado", HttpStatusCode.NotFound);
+
+            // Validar que el pedido pertenece al usuario logueado
+            if (pedido.UsuarioId != usuarioId)
+                throw new RespuestaError(
+                    "No tenés permisos para cancelar este pedido",
+                    HttpStatusCode.Forbidden
+                );
+
+            if (pedido.EstadoPedido.Nombre == "Cancelado")
+                throw new RespuestaError("El pedido ya está cancelado", HttpStatusCode.BadRequest);
+
+            // Solo se puede cancelar si está Pendiente
+            if (pedido.EstadoPedido.Nombre != "Pendiente")
+                throw new RespuestaError(
+                    "Solo podés cancelar pedidos en estado Pendiente",
+                    HttpStatusCode.BadRequest
+                );
+
+            var estadoCancelado = await _estadoRepo.ObtenerUno(e => e.Nombre == "Cancelado")
+                ?? throw new RespuestaError("Estado 'Cancelado' no configurado", HttpStatusCode.InternalServerError);
+
+            // Devolver stock
+            foreach (var item in pedido.PedidoItems)
+            {
+                var productoTalle = await _productoTalleRepo.ObtenerUno(
+                    pt => pt.ProductoId == item.ProductoId && pt.TalleId == item.TalleId
+                ) ?? throw new RespuestaError(
+                    "No se encontró una variante de producto del pedido",
+                    HttpStatusCode.NotFound
+                );
+
+                productoTalle.Stock += item.Cantidad;
+                await _productoTalleRepo.ActualizarUno(productoTalle);
+            }
+
+            pedido.IdEstado = estadoCancelado.Id;
+            pedido.EstadoPedido = estadoCancelado;
+            await _pedidoRepo.ActualizarUno(pedido);
+        }
+
+
     }
 }

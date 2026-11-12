@@ -126,7 +126,27 @@ namespace Backend_Prog4.Controllers
             }
         }
 
-
+        [HttpGet("buscar")]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(Respuesta), StatusCodes.Status200OK)]
+        public async Task<ActionResult<Respuesta>> Buscar(
+         [FromQuery] string? nombre,
+         [FromQuery] int? categoriaId,
+         [FromQuery] int? marcaId,
+         [FromQuery] decimal? precioMin,
+         [FromQuery] decimal? precioMax)
+        {
+            try
+            {
+                var productos = await _service.Buscar(nombre, categoriaId, marcaId, precioMin, precioMax);
+                RespuestaExito exito = new RespuestaExito("productos obtenidos!", HttpStatusCode.OK, productos);
+                return StatusCode((int)exito.CodigoEstado, exito.Res);
+            }
+            catch (Exception error)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Respuesta(error.Message));
+            }
+        }
 
     }
 }

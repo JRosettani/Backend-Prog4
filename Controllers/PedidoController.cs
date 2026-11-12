@@ -196,6 +196,34 @@ namespace Backend_Prog4.Controllers
             }
         }
 
-      
+        [HttpGet("mis-pedidos/{id}")]
+        [Authorize(Roles = $"{ROL.ADMIN},{ROL.USER}")]
+        [ProducesResponseType(typeof(Respuesta), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Respuesta), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(Respuesta), StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> ObtenerMiPedidoPorId(int id)
+        {
+            try
+            {
+                var usuarioId = int.Parse(User.FindFirstValue("Id")!);
+                var pedido = await _service.ObtenerMiPedidoPorId(id, usuarioId);
+                RespuestaExito exito = new RespuestaExito(
+                    "Pedido obtenido correctamente",
+                    HttpStatusCode.OK,
+                    pedido
+                );
+                return StatusCode((int)exito.CodigoEstado, exito.Res);
+            }
+            catch (RespuestaError error)
+            {
+                return StatusCode((int)error.CodigoEstado, error.Res);
+            }
+            catch (Exception error)
+            {
+                return StatusCode(500, new Respuesta(error.Message));
+            }
+        }
+
+
     }
 }

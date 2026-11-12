@@ -445,5 +445,39 @@ namespace Backend_Prog4.Services
         }
 
 
+        public async Task<PedidoRespuestaDTO> ObtenerMiPedidoPorId(int id, int usuarioId)
+        {
+            var pedido = await _pedidoRepo.ObtenerUno(
+                p => p.Id == id,
+                thenIncludes: q => q
+                    .Include(p => p.Usuario)
+                    .Include(p => p.EstadoPedido)
+                    .Include(p => p.PedidoItems)
+                        .ThenInclude(i => i.Producto)
+                    .Include(p => p.PedidoItems)
+                        .ThenInclude(i => i.Talle)
+            ) ?? throw new RespuestaError("Pedido no encontrado", HttpStatusCode.NotFound);
+
+            if (pedido.UsuarioId != usuarioId)
+                throw new RespuestaError("No tenés permisos para ver este pedido", HttpStatusCode.Forbidden);
+
+            return new PedidoRespuestaDTO
+            {
+                Id = pedido.Id,
+                Fecha = pedido.Fecha,
+                Total = pedido.Total,
+                EstadoNombre = pedido.EstadoPedido.Nombre,
+                UsuarioEmail = pedido.Usuario.Email,
+                Items = pedido.PedidoItems.Select(i => new PedidoItemRespuestaDTO
+                {
+                    Cantidad = i.Cantidad,
+                    PrecioUnitario = i.PrecioUnitario,
+                    ProductoNombre = i.Producto.Nombre,
+                    TalleNombre = i.Talle.Nombre
+                }).ToList()
+            };
+        }
+
+
     }
 }

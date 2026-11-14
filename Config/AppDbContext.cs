@@ -39,6 +39,13 @@ namespace Backend_Prog4.Config
                 new Rol() { Id = 2, Nombre = "User" }
             );
 
+            // Seed de estados de pedido
+            modelBuilder.Entity<EstadoPedido>().HasData(
+                new EstadoPedido() { Id = 1, Nombre = "Pendiente" },
+                new EstadoPedido() { Id = 2, Nombre = "Cancelado" },
+                new EstadoPedido() { Id = 3, Nombre = "Confirmado" }
+            );
+
             // Usuario ↔ Rol (many-to-many con entidad intermedia)
             modelBuilder.Entity<Usuario>()
                 .HasMany(u => u.Roles).WithMany()

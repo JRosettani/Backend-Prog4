@@ -60,6 +60,23 @@ namespace Backend_Prog4.Migrations
                         .IsUnique();
 
                     b.ToTable("EstadoPedidos");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Nombre = "Pendiente"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Nombre = "Cancelado"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Nombre = "Confirmado"
+                        });
                 });
 
             modelBuilder.Entity("Backend_Prog4.Models.Marca", b =>
@@ -259,6 +276,21 @@ namespace Backend_Prog4.Migrations
                     b.ToTable("Usuarios");
                 });
 
+            modelBuilder.Entity("Backend_Prog4.Models.UsuarioRol", b =>
+                {
+                    b.Property<int>("RolId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RolId", "UsuarioId");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("UsuarioRol");
+                });
+
             modelBuilder.Entity("Talle", b =>
                 {
                     b.Property<int>("Id")
@@ -277,21 +309,6 @@ namespace Backend_Prog4.Migrations
                         .IsUnique();
 
                     b.ToTable("Talles");
-                });
-
-            modelBuilder.Entity("panaderia.Models.UsuarioRol", b =>
-                {
-                    b.Property<int>("RolId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UsuarioId")
-                        .HasColumnType("int");
-
-                    b.HasKey("RolId", "UsuarioId");
-
-                    b.HasIndex("UsuarioId");
-
-                    b.ToTable("UsuarioRol");
                 });
 
             modelBuilder.Entity("Backend_Prog4.Models.Pedido", b =>
@@ -378,7 +395,7 @@ namespace Backend_Prog4.Migrations
                     b.Navigation("Talle");
                 });
 
-            modelBuilder.Entity("panaderia.Models.UsuarioRol", b =>
+            modelBuilder.Entity("Backend_Prog4.Models.UsuarioRol", b =>
                 {
                     b.HasOne("Backend_Prog4.Models.Rol", null)
                         .WithMany()

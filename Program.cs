@@ -49,6 +49,7 @@ builder.Services.AddScoped<MarcaServices>();
 builder.Services.AddScoped<PedidoService>();
 builder.Services.AddScoped<ProductoServices>();
 builder.Services.AddScoped<ProductoTalleServices>();
+builder.Services.AddScoped<EstadoPedidoService>();
 
 // Repositorios genéricos
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -90,7 +91,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+}   
 
 // CORS
 app.UseCors(opt =>

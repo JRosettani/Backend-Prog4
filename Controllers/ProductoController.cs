@@ -134,11 +134,13 @@ namespace Backend_Prog4.Controllers
          [FromQuery] int? categoriaId,
          [FromQuery] int? marcaId,
          [FromQuery] decimal? precioMin,
-         [FromQuery] decimal? precioMax)
+         [FromQuery] decimal? precioMax,
+         [FromQuery] int pagina = 1,
+         [FromQuery] int tamanio = 12)
         {
             try
             {
-                var productos = await _service.Buscar(nombre, categoriaId, marcaId, precioMin, precioMax);
+                var productos = await _service.Buscar(nombre, categoriaId, marcaId, precioMin, precioMax, pagina, tamanio);
                 RespuestaExito exito = new RespuestaExito("productos obtenidos!", HttpStatusCode.OK, productos);
                 return StatusCode((int)exito.CodigoEstado, exito.Res);
             }

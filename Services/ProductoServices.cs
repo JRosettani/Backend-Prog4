@@ -1,4 +1,5 @@
-﻿using Backend_Prog4.DTOs.Producto;
+﻿using Backend_Prog4.DTOs.Paginado;
+using Backend_Prog4.DTOs.Producto;
 using Backend_Prog4.Models;
 using Backend_Prog4.Repositories;
 using Backend_Prog4.Utils.Repuestas;
@@ -148,28 +149,37 @@ namespace Backend_Prog4.Services
             return await _repo.ObtenerTodos(prod => Ids.Contains(prod.Id));
         }
 
-        public async Task<List<ProductoDTO>> Buscar(string? nombre, int? categoriaId, int? marcaId, decimal? precioMin, decimal? precioMax)
+        public async Task<PaginadoDTO<ProductoDTO>> Buscar(
+            string? nombre, int? categoriaId, int? marcaId,
+            decimal? precioMin, decimal? precioMax,
+            int pagina = 1, int tamanio = 12)
         {
-            var lista = await _repo.ObtenerTodos(
-                // Filtro dinámico: cada condición solo se aplica si el parámetro fue enviado.
-                // Si es null o vacío, la condición devuelve true y no filtra nada.
+            // valores seguros: pagina minima 1 y tamanio entre 1 y 50
+            pagina = Math.Max(1, pagina);
+            tamanio = Math.Clamp(tamanio, 1, 50);
+
+            var (lista, total) = await _repo.ObtenerPaginado(
+                pagina,
+                tamanio,
+                // Filtro dinamico: cada condicion solo se aplica si el parametro fue enviado.
                 predicate: p =>
-                    (string.IsNullOrEmpty(nombre) || p.Nombre.Contains(nombre)) &&   // si no hay nombre, pasa todos; si hay, filtra por nombre
-                    (categoriaId == null || p.CategoriaId == categoriaId) &&          // si no hay categoriaId, pasa todos; si hay, filtra por categoría
-                    (marcaId == null || p.MarcaId == marcaId) &&                      // si no hay marcaId, pasa todos; si hay, filtra por marca
-                    (precioMin == null || p.Precio >= precioMin) &&                   // si no hay precioMin, pasa todos; si hay, filtra precio mayor o igual
-                    (precioMax == null || p.Precio <= precioMax),                     // si no hay precioMax, pasa todos; si hay, filtra precio menor o igual
+                    (string.IsNullOrEmpty(nombre) || p.Nombre.Contains(nombre)) &&
+                    (categoriaId == null || p.CategoriaId == categoriaId) &&
+                    (marcaId == null || p.MarcaId == marcaId) &&
+                    (precioMin == null || p.Precio >= precioMin) &&
+                    (precioMax == null || p.Precio <= precioMax),
 
                 // Carga las relaciones necesarias para armar el DTO
                 thenIncludes: q => q
-                    .Include(p => p.Categoria)       // para acceder a Categoria.Nombre
-                    .Include(p => p.Marca)           // para acceder a Marca.Nombre
-                    .Include(p => p.Talles)          // para acceder a la lista de talles
-                        .ThenInclude(t => t.Talle)   // para acceder a Talle.Nombre dentro de cada ProductoTalle
+                    .Include(p => p.Categoria)
+                    .Include(p => p.Marca)
+                    .Include(p => p.Talles)
+                        .ThenInclude(t => t.Talle),
+
+                orderBy: p => p.Id
             );
 
-            // Mapea cada entidad Producto a un ProductoDTO para no devolver la entidad cruda
-            return lista.Select(p => new ProductoDTO
+            var items = lista.Select(p => new ProductoDTO
             {
                 Id = p.Id,
                 Nombre = p.Nombre,
@@ -187,6 +197,14 @@ namespace Backend_Prog4.Services
                     Stock = t.Stock
                 }).ToList()
             }).ToList();
+
+            return new PaginadoDTO<ProductoDTO>
+            {
+                Items = items,
+                Total = total,
+                Pagina = pagina,
+                TamanioPagina = tamanio
+            };
         }
 
     }

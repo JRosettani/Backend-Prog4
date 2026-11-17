@@ -60,58 +60,26 @@ namespace Backend_Prog4.Migrations
                         .IsUnique();
 
                     b.ToTable("EstadoPedidos");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Nombre = "Pendiente"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Nombre = "Cancelado"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Nombre = "Confirmado"
+                        });
                 });
 
             modelBuilder.Entity("Backend_Prog4.Models.Marca", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("MyProperty")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Marcas");
-                });
-
-            modelBuilder.Entity("Backend_Prog4.Models.Pedido", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("EstadoPedidoId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("IdEstado")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Total")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("UsuarioId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EstadoPedidoId");
-
-                    b.HasIndex("UsuarioId");
-
-                    b.ToTable("Pedidos");
-                });
-
-            modelBuilder.Entity("Backend_Prog4.Models.Talle", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -128,7 +96,155 @@ namespace Backend_Prog4.Migrations
                     b.HasIndex("Nombre")
                         .IsUnique();
 
-                    b.ToTable("Talles");
+                    b.ToTable("Marcas");
+                });
+
+            modelBuilder.Entity("Backend_Prog4.Models.Pedido", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IdEstado")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Total")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdEstado");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("Pedidos");
+                });
+
+            modelBuilder.Entity("Backend_Prog4.Models.PedidoItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Cantidad")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PedidoId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("PrecioUnitario")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ProductoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TalleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PedidoId");
+
+                    b.HasIndex("ProductoId");
+
+                    b.HasIndex("TalleId");
+
+                    b.ToTable("PedidoItems");
+                });
+
+            modelBuilder.Entity("Backend_Prog4.Models.Producto", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoriaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImagenUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("MarcaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Precio")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoriaId");
+
+                    b.HasIndex("MarcaId");
+
+                    b.ToTable("Productos");
+                });
+
+            modelBuilder.Entity("Backend_Prog4.Models.ProductoTalle", b =>
+                {
+                    b.Property<int>("ProductoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TalleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Stock")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProductoId", "TalleId");
+
+                    b.HasIndex("TalleId");
+
+                    b.ToTable("ProductosTalles");
+                });
+
+            modelBuilder.Entity("Backend_Prog4.Models.Rol", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Nombre = "Admin"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Nombre = "User"
+                        });
                 });
 
             modelBuilder.Entity("Backend_Prog4.Models.Usuario", b =>
@@ -155,19 +271,51 @@ namespace Backend_Prog4.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("esAdmin")
-                        .HasColumnType("bit");
-
                     b.HasKey("Id");
 
                     b.ToTable("Usuarios");
+                });
+
+            modelBuilder.Entity("Backend_Prog4.Models.UsuarioRol", b =>
+                {
+                    b.Property<int>("RolId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RolId", "UsuarioId");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("UsuarioRol");
+                });
+
+            modelBuilder.Entity("Talle", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Nombre")
+                        .IsUnique();
+
+                    b.ToTable("Talles");
                 });
 
             modelBuilder.Entity("Backend_Prog4.Models.Pedido", b =>
                 {
                     b.HasOne("Backend_Prog4.Models.EstadoPedido", "EstadoPedido")
                         .WithMany()
-                        .HasForeignKey("EstadoPedidoId")
+                        .HasForeignKey("IdEstado")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -180,6 +328,101 @@ namespace Backend_Prog4.Migrations
                     b.Navigation("EstadoPedido");
 
                     b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("Backend_Prog4.Models.PedidoItem", b =>
+                {
+                    b.HasOne("Backend_Prog4.Models.Pedido", "Pedido")
+                        .WithMany("PedidoItems")
+                        .HasForeignKey("PedidoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Backend_Prog4.Models.Producto", "Producto")
+                        .WithMany()
+                        .HasForeignKey("ProductoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Talle", "Talle")
+                        .WithMany()
+                        .HasForeignKey("TalleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Pedido");
+
+                    b.Navigation("Producto");
+
+                    b.Navigation("Talle");
+                });
+
+            modelBuilder.Entity("Backend_Prog4.Models.Producto", b =>
+                {
+                    b.HasOne("Backend_Prog4.Models.Categoria", "Categoria")
+                        .WithMany()
+                        .HasForeignKey("CategoriaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Backend_Prog4.Models.Marca", "Marca")
+                        .WithMany()
+                        .HasForeignKey("MarcaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Categoria");
+
+                    b.Navigation("Marca");
+                });
+
+            modelBuilder.Entity("Backend_Prog4.Models.ProductoTalle", b =>
+                {
+                    b.HasOne("Backend_Prog4.Models.Producto", "Producto")
+                        .WithMany("Talles")
+                        .HasForeignKey("ProductoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Talle", "Talle")
+                        .WithMany("ProductoTalles")
+                        .HasForeignKey("TalleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Producto");
+
+                    b.Navigation("Talle");
+                });
+
+            modelBuilder.Entity("Backend_Prog4.Models.UsuarioRol", b =>
+                {
+                    b.HasOne("Backend_Prog4.Models.Rol", null)
+                        .WithMany()
+                        .HasForeignKey("RolId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Backend_Prog4.Models.Usuario", null)
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Backend_Prog4.Models.Pedido", b =>
+                {
+                    b.Navigation("PedidoItems");
+                });
+
+            modelBuilder.Entity("Backend_Prog4.Models.Producto", b =>
+                {
+                    b.Navigation("Talles");
+                });
+
+            modelBuilder.Entity("Talle", b =>
+                {
+                    b.Navigation("ProductoTalles");
                 });
 #pragma warning restore 612, 618
         }

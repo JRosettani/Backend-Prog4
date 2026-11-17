@@ -1,28 +1,32 @@
-﻿using System.Net;
+﻿
+using System.Net;
 using Backend_Prog4.Config;
 using Backend_Prog4.DTOs.Categoria;
 using Backend_Prog4.Models;
+using Backend_Prog4.Repositories;
 using Backend_Prog4.Utils.Repuestas;
 
 namespace Backend_Prog4.Services;
 
 public class CategoriasService
 {
-    private readonly AppDbContext _db;
-    public CategoriasService(AppDbContext db)
+    private readonly IRepository<Categoria> _repo;
+
+    public CategoriasService(IRepository<Categoria> repo)
     {
-        _db = db;
+        _repo = repo;
     }
 
-    public List<Categoria> ObtenerTodos()
+    public async Task<List<Categoria>> ObtenerTodos()
     {
-        var lista = _db.Categorias.ToList();
+        var lista = await _repo.ObtenerTodos();
         return lista;
     }
 
-    public Categoria ObtenerUnoPorId(int id)
+    public async Task<Categoria> ObtenerUnoPorId(int id)
     {
-        var cat = _db.Categorias.FirstOrDefault((p) => p.Id == id);
+        var cat = await _repo.ObtenerUno(p => p.Id == id);
+
         if (cat == null)
         {
             throw new RespuestaError(
@@ -30,52 +34,55 @@ public class CategoriasService
                 HttpStatusCode.NotFound
             );
         }
+
         return cat;
     }
 
-    public Categoria CrearUno(CrearActualizarCategoriaDTO dto)
+    public async  Task<Categoria> CrearUno(CrearActualizarCategoriaDTO dto)
     {
         var cat = new Categoria()
         {
             Nombre = dto.Nombre,
         };
 
-        _db.Categorias.Add(cat);
-        _db.SaveChanges();
+        await _repo.CrearUno(cat);
+
         return cat;
     }
 
-    public Categoria ActualizarUnoPorId(int id, CrearActualizarCategoriaDTO dto)
+    public async Task<Categoria> ActualizarUnoPorId(int id, CrearActualizarCategoriaDTO dto)
     {
-        Categoria cat = ObtenerUnoPorId(id);
+        Categoria cat = await ObtenerUnoPorId(id);
+
         if (dto.Nombre != null)
         {
             cat.Nombre = dto.Nombre;
         }
 
-        _db.Categorias.Update(cat);
-        _db.SaveChanges();
+        await _repo.ActualizarUno(cat);
 
         return cat;
     }
 
-    public void EliminarUnoPorId(int id)
+    public async Task EliminarUnoPorId(int id)
     {
-        Categoria cat = ObtenerUnoPorId(id);
-        _db.Categorias.Remove(cat);
-        _db.SaveChanges();
+        Categoria cat = await ObtenerUnoPorId(id);
+
+        await _repo.EliminarUno(cat);
     }
 
-    public List<Categoria> ObtenerPorIds(List<int> Ids)
+    public async Task<List<Categoria>> ObtenerPorIds(List<int> Ids)
     {
         if (Ids == null || Ids.Count == 0)
         {
             throw new RespuestaError(
-               "La lista esta vacia",
-               HttpStatusCode.BadRequest
-           );
+                "La lista esta vacia",
+                HttpStatusCode.BadRequest
+            );
         }
-        var cats = _db.Categorias.Where(cat => Ids.Contains(cat.Id)).ToList();
+
+        var cats = await _repo.ObtenerTodos(cat => Ids.Contains(cat.Id));
+
         return cats;
     }
 }
